@@ -1,27 +1,27 @@
-import { useAuth } from "@/app/providers/AuthProvider";
-import { Navigate, Outlet } from "react-router-dom";
-import { useProfile } from "@/features/users/hooks/useProfile";
+import { Navigate, Outlet } from 'react-router-dom';
 
-// type UserRole = Database["public"]["Enums"]["user_role"];
+import { useProfileContext } from '@/app/providers/ProfileProvider';
+import { FullPageLoader } from '@/shared/components/ui/loader';
 
 interface RoleGuardProps {
-    // allowedRoles: UserRole[];
-    allowedRoles: string[];
-    redirectTo?: string;
+  allowedRoles: string[];
+  redirectTo?: string;
 }
 
-export default function RoleGuard({ allowedRoles, redirectTo = "/" }: RoleGuardProps) {
-    console.log(allowedRoles, redirectTo);
-    const { isInitialized } = useAuth();
-    const { data: profileData, isLoading: isProfileLoading } = useProfile();
+export default function RoleGuard({ allowedRoles, redirectTo = '/' }: RoleGuardProps) {
+  const { data: profile, isLoading } = useProfileContext();
 
-    if (!isInitialized) return null;
+  // Show loader while profile is being fetched to prevent flickering
+  if (isLoading) {
+    return <FullPageLoader />;
+  }
 
-    if (isProfileLoading) return null;
+  const roles = profile?.roles ?? [];
+  const hasRole = roles.some((r) => allowedRoles.includes(r.name));
 
-    // if (!profileData || !allowedRoles.includes(profileData.data.role_id as UserRole)) {
-    //     return <Navigate to={redirectTo} replace />;
-    // }
+  if (!hasRole) {
+    return <Navigate to={redirectTo} replace />;
+  }
 
-    return <Outlet />;
+  return <Outlet />;
 }

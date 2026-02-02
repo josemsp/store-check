@@ -1,14 +1,15 @@
-import { useQuery } from '@tanstack/react-query'
-import { useAuth } from '@/app/providers/AuthProvider'
-import { domains } from '@/infra/api/domains'
+import { useAuth } from '@/app/providers/AuthProvider';
+import { useGetMe } from '@/infra/api/endpoints/users';
 
 export const useProfile = () => {
-    const { isAuthenticated, isInitialized } = useAuth()
+  const { isAuthenticated, isInitialized } = useAuth();
 
-    return useQuery({
-        queryKey: ['profile'],
-        queryFn: () => domains.users.me.get,
-        enabled: isAuthenticated && isInitialized,
-        staleTime: 1000 * 60 * 5, // 5 minutes
-    })
-}
+  return useGetMe({
+    query: {
+      select: (data) => data?.data,
+      enabled: isAuthenticated && isInitialized,
+      staleTime: 1000 * 60 * 5,
+      placeholderData: (prevData) => prevData,
+    },
+  });
+};

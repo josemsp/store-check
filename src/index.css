@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -121,4 +121,37 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* index.css */
+
+/* Previene FOUC */
+html {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Transición suave para todo el body */
+body {
+  transition: opacity 0.15s ease-in-out;
+}
+
+/* Transiciones para rutas */
+#root {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Previene layout shift durante carga */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

@@ -4,556 +4,556 @@
  */
 
 export interface paths {
-    "/api/v1/health": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Check API and Database health */
-        get: operations["get_HealthCheckController"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+  '/api/v1/health': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/invitations/validate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Validate an invitation */
-        post: operations["post_ValidateInvitationController"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** Check API and Database health */
+    get: operations['get_HealthCheckController'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/invitations/validate': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/invitations": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Invite a new user owner */
-        post: operations["post_InviteUserOwnerController"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** Validate an invitation */
+    post: operations['post_ValidateInvitationController'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/invitations': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/invitations/accept": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Accept an invitation */
-        post: operations["post_AcceptInvitationController"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** Invite a new user owner */
+    post: operations['post_InviteUserOwnerController'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/invitations/accept': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    get?: never;
+    put?: never;
+    /** Accept an invitation */
+    post: operations['post_AcceptInvitationController'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: never;
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+  schemas: never;
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    get_HealthCheckController: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description System is healthy */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: true;
-                        message?: string;
-                        data: {
-                            database: {
-                                status: string;
-                                latency: string;
-                            };
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-            /** @description Bad request / validation error */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: false;
-                        error: {
-                            code: string;
-                            message: string;
-                            details?: unknown;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: false;
-                        error: {
-                            code: string;
-                            message: string;
-                            details?: unknown;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-            /** @description Not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: false;
-                        error: {
-                            code: string;
-                            message: string;
-                            details?: unknown;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: false;
-                        error: {
-                            code: string;
-                            message: string;
-                            details?: unknown;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-        };
+  get_HealthCheckController: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    post_ValidateInvitationController: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description System is healthy */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: {
-            content: {
-                "application/json": {
-                    token: string;
-                };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: true;
+            message?: string;
+            data: {
+              database: {
+                status: string;
+                latency: string;
+              };
             };
+            meta: {
+              timestamp: string;
+            };
+          };
         };
-        responses: {
-            /** @description Invitation validated successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: true;
-                        message?: string;
-                        data: {
-                            /** Format: email */
-                            email: string;
-                            roleName: string;
-                            isNewCompany: boolean;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-            /** @description Bad request / validation error */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: false;
-                        error: {
-                            code: string;
-                            message: string;
-                            details?: unknown;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: false;
-                        error: {
-                            code: string;
-                            message: string;
-                            details?: unknown;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-            /** @description Not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: false;
-                        error: {
-                            code: string;
-                            message: string;
-                            details?: unknown;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: false;
-                        error: {
-                            code: string;
-                            message: string;
-                            details?: unknown;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
+      };
+      /** @description Bad request / validation error */
+      400: {
+        headers: {
+          [name: string]: unknown;
         };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: false;
+            error: {
+              code: string;
+              message: string;
+              details?: unknown;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: false;
+            error: {
+              code: string;
+              message: string;
+              details?: unknown;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: false;
+            error: {
+              code: string;
+              message: string;
+              details?: unknown;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: false;
+            error: {
+              code: string;
+              message: string;
+              details?: unknown;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
     };
-    post_InviteUserOwnerController: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": {
-                    /** Format: email */
-                    email: string;
-                };
-            };
-        };
-        responses: {
-            /** @description User invited successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: true;
-                        message?: string;
-                        data: {
-                            /** Format: email */
-                            email: string;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-            /** @description Bad request / validation error */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: false;
-                        error: {
-                            code: string;
-                            message: string;
-                            details?: unknown;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: false;
-                        error: {
-                            code: string;
-                            message: string;
-                            details?: unknown;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-            /** @description Not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: false;
-                        error: {
-                            code: string;
-                            message: string;
-                            details?: unknown;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: false;
-                        error: {
-                            code: string;
-                            message: string;
-                            details?: unknown;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-        };
+  };
+  post_ValidateInvitationController: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    post_AcceptInvitationController: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: {
+      content: {
+        'application/json': {
+          token: string;
         };
-        requestBody?: {
-            content: {
-                "application/json": {
-                    token: string;
-                    avatarUrl?: string;
-                    firstName: string;
-                    lastName: string;
-                    companyName: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Invitation accepted successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: true;
-                        message?: string;
-                        data: {
-                            /** Format: date-time */
-                            acceptedAt: string;
-                            invitationStatus: string;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-            /** @description Bad request / validation error */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: false;
-                        error: {
-                            code: string;
-                            message: string;
-                            details?: unknown;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: false;
-                        error: {
-                            code: string;
-                            message: string;
-                            details?: unknown;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-            /** @description Not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: false;
-                        error: {
-                            code: string;
-                            message: string;
-                            details?: unknown;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {boolean} */
-                        success: false;
-                        error: {
-                            code: string;
-                            message: string;
-                            details?: unknown;
-                        };
-                        meta: {
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-        };
+      };
     };
+    responses: {
+      /** @description Invitation validated successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: true;
+            message?: string;
+            data: {
+              /** Format: email */
+              email: string;
+              roleName: string;
+              isNewCompany: boolean;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+      /** @description Bad request / validation error */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: false;
+            error: {
+              code: string;
+              message: string;
+              details?: unknown;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: false;
+            error: {
+              code: string;
+              message: string;
+              details?: unknown;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: false;
+            error: {
+              code: string;
+              message: string;
+              details?: unknown;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: false;
+            error: {
+              code: string;
+              message: string;
+              details?: unknown;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  post_InviteUserOwnerController: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'application/json': {
+          /** Format: email */
+          email: string;
+        };
+      };
+    };
+    responses: {
+      /** @description User invited successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: true;
+            message?: string;
+            data: {
+              /** Format: email */
+              email: string;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+      /** @description Bad request / validation error */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: false;
+            error: {
+              code: string;
+              message: string;
+              details?: unknown;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: false;
+            error: {
+              code: string;
+              message: string;
+              details?: unknown;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: false;
+            error: {
+              code: string;
+              message: string;
+              details?: unknown;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: false;
+            error: {
+              code: string;
+              message: string;
+              details?: unknown;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  post_AcceptInvitationController: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'application/json': {
+          token: string;
+          avatarUrl?: string;
+          firstName: string;
+          lastName: string;
+          companyName: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Invitation accepted successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: true;
+            message?: string;
+            data: {
+              /** Format: date-time */
+              acceptedAt: string;
+              invitationStatus: string;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+      /** @description Bad request / validation error */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: false;
+            error: {
+              code: string;
+              message: string;
+              details?: unknown;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: false;
+            error: {
+              code: string;
+              message: string;
+              details?: unknown;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: false;
+            error: {
+              code: string;
+              message: string;
+              details?: unknown;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @enum {boolean} */
+            success: false;
+            error: {
+              code: string;
+              message: string;
+              details?: unknown;
+            };
+            meta: {
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
 }

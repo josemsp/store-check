@@ -1,21 +1,19 @@
-import { useAuth } from "@/app/providers/AuthProvider";
-import { useProfile } from "@/features/users/hooks/useProfile";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet } from 'react-router-dom';
+
+import { useAuth } from '@/app/providers/AuthProvider';
+import { FullPageLoader } from '@/shared/components/ui/loader';
 
 export default function PublicRoute() {
-    const { isAuthenticated, isInitialized } = useAuth();
-    const { data: profile, isLoading: isProfileLoading } = useProfile();
+  const { isAuthenticated, isInitialized } = useAuth();
 
-    if (!isInitialized) return null;
+  // Show loader while auth is initializing to prevent flickering
+  if (!isInitialized) {
+    return <FullPageLoader />;
+  }
 
-    if (isAuthenticated) {
-        if (isProfileLoading) return null;
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
 
-        // if (profile?.role_id === 'root') {
-        //     return <Navigate to="/root-dashboard" replace />;
-        // }
-        return <Navigate to="/" replace />;
-    }
-
-    return <Outlet />;
+  return <Outlet />;
 }

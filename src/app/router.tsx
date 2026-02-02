@@ -1,105 +1,161 @@
-import { createBrowserRouter } from "react-router";
-import PublicRoute from "../shared/guards/PublicRoute";
-import ProtectedRoute from "../shared/guards/ProtectedRoute";
-import AppLayout from "@/app/layouts/AppLayout";
-import Signin from "@/features/auth/pages/Singnin";
-import ForgotPassword from "@/features/auth/pages/ForgotPassword";
-import RoleGuard from "../shared/guards/RoleGuard";
-import RootDashboard from "@/features/dashboards/admin/Dashboard";
-import Invitations from "@/features/dashboards/admin/Invitations";
-import Onboarding from "@/features/onboarding/pages/Onboarding";
-import UserProfile from "@/features/users/pages/UserProfile";
+import { Suspense, lazy } from 'react';
+import { createBrowserRouter } from 'react-router';
 
-import NotFound from "@/shared/pages/NotFound";
+import AppLayout from '@/app/layouts/AppLayout';
+import ForgotPassword from '@/features/auth/pages/ForgotPassword';
+import Signin from '@/features/auth/pages/Singnin';
+import { FullPageLoader } from '@/shared/components/ui/loader';
+import DashboardRedirector from '@/shared/guards/DashboardRedirector';
+import NotFound from '@/shared/pages/NotFound';
+
+import ProtectedRoute from '../shared/guards/ProtectedRoute';
+import PublicRoute from '../shared/guards/PublicRoute';
+import RoleGuard from '../shared/guards/RoleGuard';
+
+const RootDashboardLazy = lazy(() => import('@/features/dashboards/admin/Dashboard'));
+const InvitationsLazy = lazy(() => import('@/features/dashboards/admin/Invitations'));
+const OnboardingLazy = lazy(() => import('@/features/onboarding/pages/Onboarding'));
+const UserProfileLazy = lazy(() => import('@/features/users/pages/UserProfile'));
+
+// Preload functions for lazy components - can be called on hover to prefetch
+export const preloadRootDashboard = () => import('@/features/dashboards/admin/Dashboard');
+export const preloadInvitations = () => import('@/features/dashboards/admin/Invitations');
+export const preloadOnboarding = () => import('@/features/onboarding/pages/Onboarding');
+export const preloadUserProfile = () => import('@/features/users/pages/UserProfile');
+
+const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={<FullPageLoader />}>{children}</Suspense>
+);
 
 export const router = createBrowserRouter([
-    {
-        element: <PublicRoute />,
+  {
+    element: <PublicRoute />,
+    children: [
+      {
+        path: '/login',
+        element: (
+          <SuspenseWrapper>
+            <Signin />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: '/forgot-password',
+        element: (
+          <SuspenseWrapper>
+            <ForgotPassword />
+          </SuspenseWrapper>
+        ),
+      },
+    ],
+  },
+  {
+    path: '/onboarding',
+    element: <ProtectedRoute />,
+    children: [
+      {
+        index: true,
+        element: (
+          <SuspenseWrapper>
+            <OnboardingLazy />
+          </SuspenseWrapper>
+        ),
+      },
+    ],
+  },
+  {
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: <RoleGuard allowedRoles={['root']} />,
         children: [
-            {
-                path: "/login",
-                element: <Signin />,
-            },
-            {
-                path: "/forgot-password",
-                element: <ForgotPassword />,
-            },
-        ]
-    },
-    {
-        path: "/onboarding",
-        element: <Onboarding />,
-    },
-    {
-        element: <ProtectedRoute />,
-        loader: () => {
-            return <h1>Loader</h1>;
-        },
-        children: [
-            // {
-            //     element: <RoleGuard allowedRoles={['root']} />,
-            //     children: [
-            //         {
-            //             path: "root-dashboard",
-            //             element: <RootDashboard />,
-            //             children: [
-            //                 { index: true, element: <div className="p-4">Bienvenido al panel de administración Root</div> },
-            //                 { path: "invitations", element: <Invitations /> }
-            //             ]
-            //         }
-            //     ]
-            // },
-            {
-                children: [
-                    {
-                        element: <AppLayout />,
-                        children: [
-                            { index: true, element: <h1>Dashboard</h1> },
-                            {
-                                path: "users",
-                                element: <h1>Users</h1>,
-                            },
-                            {
-                                path: "inventory",
-                                element: <h1>Inventory</h1>,
-                            },
-                            {
-                                path: "shipments",
-                                element: <h1>Shipments</h1>,
-                            },
-                            {
-                                path: "branches",
-                                element: <h1>Branches</h1>,
-                            },
-                            {
-                                path: "profile",
-                                element: <UserProfile />,
-                            },
-                            {
-                                path: "admin",
-                                element: <h1>Admin</h1>,
-                                loader: () => {
-                                    return <h1>Admin Loader</h1>;
-                                },
-                                children: [
-                                    {
-                                        path: "users",
-                                        element: <h1>Admin Users</h1>,
-                                    },
-                                    {
-                                        path: "settings",
-                                        element: <h1>Admin Settings</h1>,
-                                    },
-                                ],
-                            }
-                        ]
-                    }
-                ]
-            }
+          {
+            path: 'root-dashboard',
+            element: (
+              <SuspenseWrapper>
+                <RootDashboardLazy />
+              </SuspenseWrapper>
+            ),
+            children: [
+              {
+                index: true,
+                element: (
+                  <div className="p-4">Bienvenido al panel de administración Root</div>
+                ),
+              },
+              {
+                path: 'invitations',
+                element: (
+                  <SuspenseWrapper>
+                    <InvitationsLazy />
+                  </SuspenseWrapper>
+                ),
+              },
+              {
+                path: 'profile',
+                element: (
+                  <SuspenseWrapper>
+                    <UserProfileLazy />
+                  </SuspenseWrapper>
+                ),
+              },
+            ],
+          },
         ],
-    },
-    {
-        path: "*",
-        element: <NotFound />
-    }
+      },
+      {
+        element: <DashboardRedirector />,
+        children: [
+          {
+            element: <AppLayout />,
+            children: [
+              { index: true, element: <h1>Dashboard</h1> },
+              {
+                path: 'users',
+                element: <h1>Users</h1>,
+              },
+              {
+                path: 'inventory',
+                element: <h1>Inventory</h1>,
+              },
+              {
+                path: 'shipments',
+                element: <h1>Shipments</h1>,
+              },
+              {
+                path: 'branches',
+                element: <h1>Branches</h1>,
+              },
+              {
+                path: 'profile',
+                element: (
+                  <SuspenseWrapper>
+                    <UserProfileLazy />
+                  </SuspenseWrapper>
+                ),
+              },
+              {
+                path: 'admin',
+                element: <h1>Admin</h1>,
+                children: [
+                  {
+                    path: 'users',
+                    element: <h1>Admin Users</h1>,
+                  },
+                  {
+                    path: 'settings',
+                    element: <h1>Admin Settings</h1>,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    path: '*',
+    element: <NotFound />,
+  },
 ]);

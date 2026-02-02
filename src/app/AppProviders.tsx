@@ -1,34 +1,41 @@
-import { useEffect } from "react"
-import { AuthProvider, useAuth } from "./providers/AuthProvider"
-import { QueryProvider } from "./providers/QueryProvider"
-import { ThemeProvider } from "./providers/ThemeProvider"
-import { ToastProvider } from "./providers/ToastProvider"
-import { setupInterceptors } from "@/infra/api/interceptors"
-import { QueryAuthBridge } from "./providers/QueryAuthBridge"
+import { useEffect } from 'react';
 
-function AxiosAuthBridge() {
-    const { session } = useAuth()
+import { setupInterceptors } from '@/infra/api/interceptors';
+import { tokenStore } from '@/infra/api/tokenStore';
 
-    useEffect(() => {
-        setupInterceptors(() => session?.access_token ?? null)
-    }, [session])
+import { AuthProvider } from './providers/AuthProvider';
+import { InitializerProvider } from './providers/InitializerProvider';
+import { ProfileProvider } from './providers/ProfileProvider';
+import { QueryAuthBridge } from './providers/QueryAuthBridge';
+import { QueryProvider } from './providers/QueryProvider';
+import { ThemeProvider } from './providers/ThemeProvider';
+import { ToastProvider } from './providers/ToastProvider';
 
-    return null
+export function AxiosAuthBridge() {
+  useEffect(() => {
+    setupInterceptors(() => tokenStore.token);
+  }, []);
+
+  return null;
 }
 
 export const AppProviders = ({ children }: { children: React.ReactNode }) => {
-    return (
-        <>
-            <AuthProvider>
-                <QueryProvider>
-                    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-                        <ToastProvider />
-                        <AxiosAuthBridge />
-                        <QueryAuthBridge />
-                        {children}
-                    </ThemeProvider>
-                </QueryProvider>
-            </AuthProvider>
-        </>
-    )
-}
+  return (
+    <>
+      <AuthProvider>
+        <QueryProvider>
+          <ProfileProvider>
+            <InitializerProvider>
+              <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+                <ToastProvider />
+                <AxiosAuthBridge />
+                <QueryAuthBridge />
+                {children}
+              </ThemeProvider>
+            </InitializerProvider>
+          </ProfileProvider>
+        </QueryProvider>
+      </AuthProvider>
+    </>
+  );
+};
