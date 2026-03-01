@@ -5,7 +5,6 @@
  * API for storage and management of products and users
  * OpenAPI spec version: 1.0.0
  */
-import type { GetUser200DataRolesItem } from './getUser200DataRolesItem';
 import type { GetUser200DataStatus } from './getUser200DataStatus';
 
 export type GetUser200Data = {
@@ -27,7 +26,10 @@ export type GetUser200Data = {
   isRoot: boolean;
   isOwner: boolean;
   permissions: string[];
-  roles: GetUser200DataRolesItem[];
+  /** @nullable */
+  roleId: string | null;
+  /** @nullable */
+  roleName: string | null;
   createdAt: string;
   updatedAt: string;
 };

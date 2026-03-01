@@ -6,9 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetMe200DataRolesItem = {
-  id: string;
-  name: string;
-  description: string;
-  isSystemRole: boolean;
+export type UpdateUser200Meta = {
+  timestamp: string;
 };

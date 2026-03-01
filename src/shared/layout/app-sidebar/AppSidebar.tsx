@@ -200,7 +200,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
   if (profile?.isRoot) {
     // Add Invitations menu item for root users
     navMainItems.push({
-      title: 'Invitations',
+      title: 'Invitaciones',
       url: '/root-dashboard/invitations',
       icon: Send,
       isActive: false,

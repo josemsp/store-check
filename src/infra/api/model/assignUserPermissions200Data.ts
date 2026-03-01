@@ -5,9 +5,9 @@
  * API for storage and management of products and users
  * OpenAPI spec version: 1.0.0
  */
-import type { GetMe200DataStatus } from './getMe200DataStatus';
+import type { AssignUserPermissions200DataStatus } from './assignUserPermissions200DataStatus';
 
-export type GetMe200Data = {
+export type AssignUserPermissions200Data = {
   id: string;
   email: string;
   /** @nullable */
@@ -18,7 +18,7 @@ export type GetMe200Data = {
   fullName: string | null;
   /** @nullable */
   avatarUrl: string | null;
-  status: GetMe200DataStatus;
+  status: AssignUserPermissions200DataStatus;
   /** @nullable */
   companyId: string | null;
   /** @nullable */

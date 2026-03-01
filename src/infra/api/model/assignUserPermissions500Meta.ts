@@ -6,9 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetUser200DataRolesItem = {
-  id: string;
-  name: string;
-  description: string;
-  isSystemRole: boolean;
+export type AssignUserPermissions500Meta = {
+  timestamp: string;
 };

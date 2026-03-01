@@ -16,8 +16,7 @@ export default function RoleGuard({ allowedRoles, redirectTo = '/' }: RoleGuardP
     return <FullPageLoader />;
   }
 
-  const roles = profile?.roles ?? [];
-  const hasRole = roles.some((r) => allowedRoles.includes(r.name));
+  const hasRole = allowedRoles.includes(profile?.roleName || '');
 
   if (!hasRole) {
     return <Navigate to={redirectTo} replace />;

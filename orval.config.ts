@@ -15,6 +15,7 @@ export default defineConfig({
       clean: true,
       mock: true,
       override: {
+        useTypeOverInterfaces: true,
         mutator: {
           path: 'src/infra/api/axios.client.ts',
           name: 'customAxios',
