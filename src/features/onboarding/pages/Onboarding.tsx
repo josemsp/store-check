@@ -102,13 +102,6 @@ const Onboarding = () => {
           avatarUrl: finalAvatarUrl,
         },
       });
-      // await acceptInvitation({
-      //     token,
-      //     firstName: pData.firstName,
-      //     lastName: pData.lastName,
-      //     avatarUrl: finalAvatarUrl,
-      //     companyName: companyName
-      // });
       navigate('/dashboard');
     } catch (error) {
       console.error('Error accepting invitation:', error);

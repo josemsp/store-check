@@ -7,13 +7,12 @@ export const axiosInstance = axios.create({
   // withCredentials: true,
 });
 
-export const customAxios = <T>(
+export const customAxios = async <T>(
   config: AxiosRequestConfig & { signal?: AbortSignal },
 ): Promise<T> => {
-  return axiosInstance
-    .request<T>({
-      ...config,
-      signal: config.signal, // 🔑 clave
-    })
-    .then((res) => res.data);
+  const res = await axiosInstance.request<T>({
+    ...config,
+    signal: config.signal, // 🔑 clave
+  });
+  return res.data;
 };

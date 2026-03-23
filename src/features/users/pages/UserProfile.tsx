@@ -1,14 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Camera, Loader2, RotateCcw, Save } from 'lucide-react';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { useAuth } from '@/app/providers/AuthProvider';
 import { useProfileContext } from '@/app/providers/ProfileProvider';
-import { getSupabaseClient } from '@/infra/auth/supabase.client';
+import { useUpdateUser } from '@/infra/api/endpoints/users';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar';
 import { Button } from '@/shared/components/ui/button';
 import {
@@ -21,18 +19,18 @@ import {
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Separator } from '@/shared/components/ui/separator';
+import { Spinner } from '@/shared/components/ui/spinner';
+import { useUploadAvatar } from '@/shared/hooks/useUploadAvatar';
 
-const profileSchema = z.object({
-  firstName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-  lastName: z.string().min(2, 'El apellido debe tener al menos 2 caracteres'),
-  email: z.email('Correo electrónico inválido'),
-});
-
-type ProfileFormValues = z.infer<typeof profileSchema>;
+import { profileSchema } from '../schemas';
+import type { ProfileFormValues } from '../types';
 
 export default function UserProfile() {
-  const { user } = useAuth();
-  const { data: profile } = useProfileContext();
+  const { data: profile, refetch: refetchProfile } = useProfileContext();
+  const { mutateAsync } = useUpdateUser();
+  const { uploadAvatar } = useUploadAvatar();
+  console.log('profile', profile);
+
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -49,69 +47,76 @@ export default function UserProfile() {
 
   // Load profile data from context into form
   useEffect(() => {
-    if (profile) {
-      reset({
-        firstName: profile.firstName || '',
-        lastName: profile.lastName || '',
-        email: profile.email || '',
-      });
-      setAvatarUrl(profile.avatarUrl || null);
-    }
+    if (!profile) return;
+    reset({
+      firstName: profile.firstName ?? '',
+      lastName: profile.lastName ?? '',
+      email: profile.email ?? '',
+    });
+    setAvatarUrl(profile.avatarUrl ?? null);
   }, [profile, reset]);
 
   // Detect if avatar has changed
-  const avatarChanged = avatarUrl !== (profile?.avatarUrl || null);
+  const avatarChanged = useMemo(
+    () => avatarUrl !== (profile?.avatarUrl ?? null),
+    [avatarUrl, profile],
+  );
   const hasChanges = isDirty || avatarChanged;
 
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files || event.target.files.length === 0) {
-      return;
+  const initials = useMemo(() => {
+    if (profile?.firstName && profile?.lastName) {
+      return profile.firstName[0] + profile.lastName[0];
     }
+    return profile?.email?.slice(0, 2).toUpperCase() ?? 'U';
+  }, [profile]);
 
-    const file = event.target.files[0];
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${user?.id}-${Math.random()}.${fileExt}`;
-    const filePath = `${fileName}`;
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-    setUploading(true);
     try {
-      const supabase = getSupabaseClient(); // Auth provider handles persistence
+      setUploading(true);
 
-      // 1. Upload to Supabase Storage
-      // Assumes a bucket named 'avatars' exists and is public
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file);
+      const url = await uploadAvatar(profile?.id ?? '', file);
+      setAvatarUrl(url);
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      // Guardado automático rápido para actualizar inmediatamente la DB
+      await mutateAsync({
+        id: profile?.id ?? '',
+        data: { avatarUrl: url },
+      });
+      await refetchProfile();
 
-      // 2. Get Public URL
-      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
-
-      setAvatarUrl(data.publicUrl);
-      toast.success('Imagen subida correctamente');
-    } catch (error: unknown) {
-      console.error('Error uploading image:', error);
-      toast.error(error instanceof Error ? error.message : 'Error al subir la imagen');
+      toast.success('Foto actualizada con éxito');
+    } catch (error) {
+      console.error(error);
+      toast.error('Error al subir la imagen');
     } finally {
       setUploading(false);
     }
   };
 
   const onSubmit = async (formData: ProfileFormValues) => {
-    if (!user) return;
+    if (!profile) return;
 
-    setLoading(true);
     try {
-      // TODO: implement update user profile
-      console.log('Profile data to update:', formData);
+      setLoading(true);
+      await mutateAsync({
+        id: profile.id,
+        data: {
+          ...(formData.firstName !== (profile.firstName ?? '') && {
+            firstName: formData.firstName,
+          }),
+          ...(formData.lastName !== (profile.lastName ?? '') && {
+            lastName: formData.lastName,
+          }),
+          ...(formData.email !== (profile.email ?? '') && { email: formData.email }),
+          ...(avatarUrl !== (profile.avatarUrl ?? null) && { avatarUrl }),
+        },
+      });
 
+      await refetchProfile();
       toast.success('Perfil actualizado correctamente');
-
-      // Force reload or re-fetch logic if needed to update global context
-      // window.location.reload();
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error('Error al actualizar el perfil');
@@ -121,22 +126,16 @@ export default function UserProfile() {
   };
 
   const handleReset = () => {
-    if (profile) {
-      reset({
-        firstName: profile.firstName || '',
-        lastName: profile.lastName || '',
-        email: profile.email || '',
-      });
-      setAvatarUrl(profile.avatarUrl || null);
-      toast.info('Cambios descartados');
-    }
-  };
+    if (!profile) return;
 
-  const Initials = () => {
-    if (profile?.firstName && profile?.lastName) {
-      return profile.firstName.charAt(0) + profile.lastName.charAt(0);
-    }
-    return user?.email?.substring(0, 2).toUpperCase() || 'U';
+    reset({
+      firstName: profile.firstName ?? '',
+      lastName: profile.lastName ?? '',
+      email: profile.email ?? '',
+    });
+    setAvatarUrl(profile.avatarUrl ?? null);
+
+    toast.info('Cambios descartados');
   };
 
   return (
@@ -166,9 +165,13 @@ export default function UserProfile() {
                     className="h-32 w-32 cursor-pointer ring-2 ring-offset-2 ring-offset-background ring-primary/10 transition-all group-hover:ring-primary/30"
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    <AvatarImage src={avatarUrl || ''} alt="Avatar" />
+                    <AvatarImage
+                      src={avatarUrl || ''}
+                      alt="Avatar"
+                      className="object-cover"
+                    />
                     <AvatarFallback className="text-2xl font-semibold">
-                      {Initials()}
+                      {initials}
                     </AvatarFallback>
                   </Avatar>
                   <div
@@ -198,9 +201,7 @@ export default function UserProfile() {
                   <h3 className="text-xl font-semibold">
                     {profile?.fullName || 'Usuario'}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {profile?.email || user?.email}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{profile?.email}</p>
                   <p className="text-xs text-muted-foreground">
                     Haz clic en la imagen para cambiar tu foto de perfil.
                     <br />
@@ -286,7 +287,7 @@ export default function UserProfile() {
                     <Button type="submit" disabled={!hasChanges || loading || uploading}>
                       {loading ? (
                         <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <Spinner data-icon="inline-start" />
                           Guardando...
                         </>
                       ) : (
