@@ -14,17 +14,17 @@ const companySchema = z.object({
 type CompanyFormValues = z.infer<typeof companySchema>;
 
 interface OnboardingCompanyFormProps {
-  onComplete: (data: { name: string }) => void;
+  onComplete: (companyName: string) => void;
   onBack: () => void;
   isLoading?: boolean;
-  initialData?: { name: string } | null;
+  companyName?: string;
 }
 
 export function OnboardingCompanyForm({
   onComplete,
   onBack,
   isLoading,
-  initialData,
+  companyName,
 }: OnboardingCompanyFormProps) {
   const {
     register,
@@ -33,12 +33,12 @@ export function OnboardingCompanyForm({
   } = useForm<CompanyFormValues>({
     resolver: zodResolver(companySchema),
     defaultValues: {
-      name: initialData?.name || '',
+      name: companyName || '',
     },
   });
 
   const onSubmit = (data: CompanyFormValues) => {
-    onComplete(data);
+    onComplete(data.name);
   };
 
   return (

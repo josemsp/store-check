@@ -10,6 +10,8 @@ import InputPassword from '@/shared/components/form/InputPassword';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar';
 import { Button } from '@/shared/components/ui/button';
 
+import type { ProfileData } from '../stores/useOnboardingStore';
+
 const profileSchema = z
   .object({
     firstName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -27,20 +29,10 @@ const profileSchema = z
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 interface OnboardingProfileFormProps {
-  onNext: (data: {
-    firstName: string;
-    lastName: string;
-    password: string;
-    avatarFile?: File;
-  }) => void;
+  onNext: (data: ProfileData) => void;
   onBack: () => void;
   initialEmail?: string;
-  initialData?: {
-    firstName: string;
-    lastName: string;
-    password: string;
-    avatarFile?: File;
-  } | null;
+  initialData?: ProfileData | null;
 }
 
 export function OnboardingProfileForm({

@@ -29,7 +29,6 @@ export default function UserProfile() {
   const { data: profile, refetch: refetchProfile } = useProfileContext();
   const { mutateAsync } = useUpdateUser();
   const { uploadAvatar } = useUploadAvatar();
-  console.log('profile', profile);
 
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -49,23 +48,25 @@ export default function UserProfile() {
   useEffect(() => {
     if (!profile) return;
     reset({
-      firstName: profile.firstName ?? '',
-      lastName: profile.lastName ?? '',
+      name: profile.name ?? '',
       email: profile.email ?? '',
     });
-    setAvatarUrl(profile.avatarUrl ?? null);
+    setAvatarUrl(profile.avatar_url ?? null);
   }, [profile, reset]);
 
   // Detect if avatar has changed
   const avatarChanged = useMemo(
-    () => avatarUrl !== (profile?.avatarUrl ?? null),
+    () => avatarUrl !== (profile?.avatar_url ?? null),
     [avatarUrl, profile],
   );
   const hasChanges = isDirty || avatarChanged;
 
   const initials = useMemo(() => {
-    if (profile?.firstName && profile?.lastName) {
-      return profile.firstName[0] + profile.lastName[0];
+    if (profile?.name) {
+      return profile.name
+        .split(' ')
+        .map((n) => n[0])
+        .join('');
     }
     return profile?.email?.slice(0, 2).toUpperCase() ?? 'U';
   }, [profile]);
@@ -77,13 +78,13 @@ export default function UserProfile() {
     try {
       setUploading(true);
 
-      const url = await uploadAvatar(profile?.id ?? '', file);
+      const url = await uploadAvatar(profile?.user_id ?? '', file);
       setAvatarUrl(url);
 
       // Guardado automático rápido para actualizar inmediatamente la DB
       await mutateAsync({
-        id: profile?.id ?? '',
-        data: { avatarUrl: url },
+        id: profile?.user_id ?? '',
+        data: { avatar_url: url },
       });
       await refetchProfile();
 
@@ -102,16 +103,10 @@ export default function UserProfile() {
     try {
       setLoading(true);
       await mutateAsync({
-        id: profile.id,
+        id: profile?.user_id ?? '',
         data: {
-          ...(formData.firstName !== (profile.firstName ?? '') && {
-            firstName: formData.firstName,
-          }),
-          ...(formData.lastName !== (profile.lastName ?? '') && {
-            lastName: formData.lastName,
-          }),
-          ...(formData.email !== (profile.email ?? '') && { email: formData.email }),
-          ...(avatarUrl !== (profile.avatarUrl ?? null) && { avatarUrl }),
+          name: formData.name,
+          ...(avatarUrl && { avatar_url: avatarUrl }),
         },
       });
 
@@ -128,12 +123,8 @@ export default function UserProfile() {
   const handleReset = () => {
     if (!profile) return;
 
-    reset({
-      firstName: profile.firstName ?? '',
-      lastName: profile.lastName ?? '',
-      email: profile.email ?? '',
-    });
-    setAvatarUrl(profile.avatarUrl ?? null);
+    reset({ name: profile.name ?? '' });
+    setAvatarUrl(profile.avatar_url ?? null);
 
     toast.info('Cambios descartados');
   };
@@ -198,9 +189,7 @@ export default function UserProfile() {
                   />
                 </div>
                 <div className="space-y-2 text-center sm:text-left flex-1">
-                  <h3 className="text-xl font-semibold">
-                    {profile?.fullName || 'Usuario'}
-                  </h3>
+                  <h3 className="text-xl font-semibold">{profile?.name || 'Usuario'}</h3>
                   <p className="text-sm text-muted-foreground">{profile?.email}</p>
                   <p className="text-xs text-muted-foreground">
                     Haz clic en la imagen para cambiar tu foto de perfil.
@@ -220,28 +209,9 @@ export default function UserProfile() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">Nombre</Label>
-                    <Input
-                      id="firstName"
-                      placeholder="Tu nombre"
-                      {...register('firstName')}
-                    />
-                    {errors.firstName && (
-                      <p className="text-sm text-destructive">
-                        {errors.firstName.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Apellido</Label>
-                    <Input
-                      id="lastName"
-                      placeholder="Tu apellido"
-                      {...register('lastName')}
-                    />
-                    {errors.lastName && (
-                      <p className="text-sm text-destructive">
-                        {errors.lastName.message}
-                      </p>
+                    <Input id="name" placeholder="Tu nombre" {...register('name')} />
+                    {errors.name && (
+                      <p className="text-sm text-destructive">{errors.name.message}</p>
                     )}
                   </div>
                 </div>

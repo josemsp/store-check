@@ -5,16 +5,14 @@
  * API for storage and management of products and users
  * OpenAPI spec version: 1.0.0
  */
-import type { UpdateUserBodyStatus } from './updateUserBodyStatus';
+import type { UpdateUserBodyRole } from './updateUserBodyRole';
 
 export type UpdateUserBody = {
+  avatar_url?: string;
+  branch_id?: string;
   email?: string;
-  /** @nullable */
-  firstName?: string | null;
-  /** @nullable */
-  lastName?: string | null;
-  /** @nullable */
-  avatarUrl?: string | null;
-  status?: UpdateUserBodyStatus;
-  roleId?: string;
+  is_active?: boolean;
+  name?: string;
+  owner_id?: string;
+  role?: UpdateUserBodyRole;
 };

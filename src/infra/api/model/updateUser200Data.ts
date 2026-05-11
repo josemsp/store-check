@@ -5,16 +5,33 @@
  * API for storage and management of products and users
  * OpenAPI spec version: 1.0.0
  */
-import type { UpdateUser200DataStatus } from './updateUser200DataStatus';
+import type { UpdateUser200DataRole } from './updateUser200DataRole';
 
 export type UpdateUser200Data = {
-  email?: string;
   /** @nullable */
-  firstName?: string | null;
+  avatar_url: string | null;
   /** @nullable */
-  lastName?: string | null;
+  branch_id: string | null;
   /** @nullable */
-  avatarUrl?: string | null;
-  status?: UpdateUser200DataStatus;
-  roleId?: string;
+  branch_name: string | null;
+  /** @nullable */
+  business_name: string | null;
+  /** @nullable */
+  email: string | null;
+  /** @nullable */
+  is_active: boolean | null;
+  /** @nullable */
+  is_owner: boolean | null;
+  /** @nullable */
+  is_root: boolean | null;
+  /** @nullable */
+  logo_url: string | null;
+  /** @nullable */
+  name: string | null;
+  /** @nullable */
+  owner_id: string | null;
+  /** @nullable */
+  role: UpdateUser200DataRole;
+  /** @nullable */
+  user_id: string | null;
 };

@@ -24,22 +24,18 @@ import type {
   AcceptInvitation404,
   AcceptInvitation500,
   AcceptInvitationBody,
-  InviteUserOwner400,
-  InviteUserOwner401,
-  InviteUserOwner404,
-  InviteUserOwner500,
-  InviteUserOwnerBody,
+  InviteUser400,
+  InviteUser401,
+  InviteUser404,
+  InviteUser500,
+  InviteUserBody,
   ValidateInvitation400,
   ValidateInvitation401,
   ValidateInvitation404,
   ValidateInvitation500,
   ValidateInvitationBody,
 } from '../model';
-import type {
-  AcceptInvitation200,
-  InviteUserOwner200,
-  ValidateInvitation200,
-} from '../model';
+import type { ValidateInvitation200 } from '../model';
 
 /**
  * @summary Validate an invitation
@@ -143,7 +139,7 @@ export const acceptInvitation = (
   acceptInvitationBody: AcceptInvitationBody,
   signal?: AbortSignal,
 ) => {
-  return customAxios<AcceptInvitation200>({
+  return customAxios<void>({
     url: `/api/v1/invitations/accept`,
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -232,42 +228,35 @@ export const useAcceptInvitation = <
   return useMutation(getAcceptInvitationMutationOptions(options), queryClient);
 };
 /**
- * @summary Invite a new user owner
+ * @summary Invite a new user
  */
-export const inviteUserOwner = (
-  inviteUserOwnerBody: InviteUserOwnerBody,
-  signal?: AbortSignal,
-) => {
-  return customAxios<InviteUserOwner200>({
+export const inviteUser = (inviteUserBody: InviteUserBody, signal?: AbortSignal) => {
+  return customAxios<void>({
     url: `/api/v1/invitations`,
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    data: inviteUserOwnerBody,
+    data: inviteUserBody,
     signal,
   });
 };
 
-export const getInviteUserOwnerMutationOptions = <
-  TError =
-    | InviteUserOwner400
-    | InviteUserOwner401
-    | InviteUserOwner404
-    | InviteUserOwner500,
+export const getInviteUserMutationOptions = <
+  TError = InviteUser400 | InviteUser401 | InviteUser404 | InviteUser500,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof inviteUserOwner>>,
+    Awaited<ReturnType<typeof inviteUser>>,
     TError,
-    { data: InviteUserOwnerBody },
+    { data: InviteUserBody },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof inviteUserOwner>>,
+  Awaited<ReturnType<typeof inviteUser>>,
   TError,
-  { data: InviteUserOwnerBody },
+  { data: InviteUserBody },
   TContext
 > => {
-  const mutationKey = ['inviteUserOwner'];
+  const mutationKey = ['inviteUser'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -277,99 +266,62 @@ export const getInviteUserOwnerMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof inviteUserOwner>>,
-    { data: InviteUserOwnerBody }
+    Awaited<ReturnType<typeof inviteUser>>,
+    { data: InviteUserBody }
   > = (props) => {
     const { data } = props ?? {};
 
-    return inviteUserOwner(data);
+    return inviteUser(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type InviteUserOwnerMutationResult = NonNullable<
-  Awaited<ReturnType<typeof inviteUserOwner>>
+export type InviteUserMutationResult = NonNullable<
+  Awaited<ReturnType<typeof inviteUser>>
 >;
-export type InviteUserOwnerMutationBody = InviteUserOwnerBody;
-export type InviteUserOwnerMutationError =
-  | InviteUserOwner400
-  | InviteUserOwner401
-  | InviteUserOwner404
-  | InviteUserOwner500;
+export type InviteUserMutationBody = InviteUserBody;
+export type InviteUserMutationError =
+  | InviteUser400
+  | InviteUser401
+  | InviteUser404
+  | InviteUser500;
 
 /**
- * @summary Invite a new user owner
+ * @summary Invite a new user
  */
-export const useInviteUserOwner = <
-  TError =
-    | InviteUserOwner400
-    | InviteUserOwner401
-    | InviteUserOwner404
-    | InviteUserOwner500,
+export const useInviteUser = <
+  TError = InviteUser400 | InviteUser401 | InviteUser404 | InviteUser500,
   TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof inviteUserOwner>>,
+      Awaited<ReturnType<typeof inviteUser>>,
       TError,
-      { data: InviteUserOwnerBody },
+      { data: InviteUserBody },
       TContext
     >;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof inviteUserOwner>>,
+  Awaited<ReturnType<typeof inviteUser>>,
   TError,
-  { data: InviteUserOwnerBody },
+  { data: InviteUserBody },
   TContext
 > => {
-  return useMutation(getInviteUserOwnerMutationOptions(options), queryClient);
+  return useMutation(getInviteUserMutationOptions(options), queryClient);
 };
 
 export const getValidateInvitationResponseMock = (
   overrideResponse: Partial<ValidateInvitation200> = {},
 ): ValidateInvitation200 => ({
-  success: faker.datatype.boolean(),
-  message: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  data: {
-    email: faker.internet.email(),
-    roleName: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    isNewCompany: faker.datatype.boolean(),
-  },
-  meta: { timestamp: faker.string.alpha({ length: { min: 10, max: 20 } }) },
-  ...overrideResponse,
-});
-
-export const getAcceptInvitationResponseMock = (
-  overrideResponse: Partial<AcceptInvitation200> = {},
-): AcceptInvitation200 => ({
-  success: faker.datatype.boolean(),
-  message: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  data: {
-    acceptedAt: faker.date.past().toISOString().slice(0, 19) + 'Z',
-    invitationStatus: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  },
-  meta: { timestamp: faker.string.alpha({ length: { min: 10, max: 20 } }) },
-  ...overrideResponse,
-});
-
-export const getInviteUserOwnerResponseMock = (
-  overrideResponse: Partial<InviteUserOwner200> = {},
-): InviteUserOwner200 => ({
-  success: faker.datatype.boolean(),
-  message: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  data: { email: faker.internet.email() },
-  meta: { timestamp: faker.string.alpha({ length: { min: 10, max: 20 } }) },
+  email: faker.internet.email(),
+  role: faker.helpers.arrayElement([
+    'owner',
+    'manager',
+    'warehouse',
+    'branch_staff',
+  ] as const),
   ...overrideResponse,
 });
 
@@ -401,51 +353,35 @@ export const getValidateInvitationMockHandler = (
 
 export const getAcceptInvitationMockHandler = (
   overrideResponse?:
-    | AcceptInvitation200
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<AcceptInvitation200> | AcceptInvitation200),
+    | void
+    | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void),
   options?: RequestHandlerOptions,
 ) => {
   return http.post(
     '*/api/v1/invitations/accept',
     async (info) => {
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === 'function'
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getAcceptInvitationResponseMock(),
-        ),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info);
+      }
+      return new HttpResponse(null, { status: 204 });
     },
     options,
   );
 };
 
-export const getInviteUserOwnerMockHandler = (
+export const getInviteUserMockHandler = (
   overrideResponse?:
-    | InviteUserOwner200
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<InviteUserOwner200> | InviteUserOwner200),
+    | void
+    | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void),
   options?: RequestHandlerOptions,
 ) => {
   return http.post(
     '*/api/v1/invitations',
     async (info) => {
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === 'function'
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getInviteUserOwnerResponseMock(),
-        ),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info);
+      }
+      return new HttpResponse(null, { status: 204 });
     },
     options,
   );
@@ -453,5 +389,5 @@ export const getInviteUserOwnerMockHandler = (
 export const getInvitationsMock = () => [
   getValidateInvitationMockHandler(),
   getAcceptInvitationMockHandler(),
-  getInviteUserOwnerMockHandler(),
+  getInviteUserMockHandler(),
 ];

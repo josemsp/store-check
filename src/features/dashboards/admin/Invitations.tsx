@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { useInviteUserOwner } from '@/infra/api/endpoints/invitations';
+import { useInviteUser } from '@/infra/api/endpoints/invitations';
 import { Button } from '@/shared/components/ui/button';
 import {
   Card,
@@ -12,19 +12,15 @@ import {
 import { Input } from '@/shared/components/ui/input';
 import { notify } from '@/shared/notifications/toast';
 
-export default function Invitations() {
+const Invitations = () => {
   const [email, setEmail] = useState('');
-  const { mutate: createInvitation, isPending: isLoading } = useInviteUserOwner();
+  const { mutate: createInvitation, isPending: isLoading } = useInviteUser();
 
   const handleCreateInvitation = (e: React.FormEvent) => {
     e.preventDefault();
 
     createInvitation(
-      {
-        data: {
-          email,
-        },
-      },
+      { data: { email } },
       {
         onSuccess: () => {
           notify.success('Invitación creada exitosamente');
@@ -74,4 +70,6 @@ export default function Invitations() {
       </Card>
     </div>
   );
-}
+};
+
+export default Invitations;

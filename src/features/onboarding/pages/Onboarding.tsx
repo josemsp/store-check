@@ -1,6 +1,6 @@
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import { useAuth } from '@/app/providers/AuthProvider';
@@ -22,222 +22,219 @@ import { useUploadAvatar } from '@/shared/hooks/useUploadAvatar';
 
 import { OnboardingCompanyForm } from '../components/OnboardingCompanyForm';
 import { OnboardingProfileForm } from '../components/OnboardingProfileForm';
-import { useOnboardingStore } from '../stores/useOnboardingStore';
+import { type ProfileData, useOnboardingStore } from '../stores/useOnboardingStore';
 
-type Step = 'validating' | 'welcome' | 'profile' | 'company';
+const PageWrapper = ({ children }: React.PropsWithChildren) => (
+  <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
+    {children}
+  </div>
+);
+
+const ErrorCard = ({ title, description }: { title: string; description: string }) => (
+  <Card className="w-full max-w-md border-red-200 shadow-lg">
+    <CardHeader>
+      <CardTitle className="flex items-center gap-2 text-red-600">
+        <AlertCircle className="h-6 w-6" />
+        {title}
+      </CardTitle>
+    </CardHeader>
+
+    <CardContent>
+      <p className="text-sm text-slate-600 dark:text-slate-300">{description}</p>
+    </CardContent>
+
+    <CardFooter>
+      <div className="w-full rounded-md border border-red-100 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+        <p className="text-center text-sm font-medium text-red-800 dark:text-red-300">
+          Por favor comunícate con soporte para obtener ayuda.
+        </p>
+      </div>
+    </CardFooter>
+  </Card>
+);
+
+const LoadingCard = () => (
+  <Card className="w-full max-w-md shadow-lg">
+    <CardHeader>
+      <CardTitle className="text-center">Validando Invitación</CardTitle>
+
+      <CardDescription className="text-center">
+        Por favor espere un momento...
+      </CardDescription>
+    </CardHeader>
+
+    <CardContent className="flex justify-center py-8">
+      <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-primary" />
+    </CardContent>
+  </Card>
+);
 
 const Onboarding = () => {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const [step, setStep] = useState<Step>('validating');
-  const { user } = useAuth();
-  // Store
-  const { profileData, setProfileData, companyData, setCompanyData } =
-    useOnboardingStore();
 
-  // Local state for avatar file specifically if we want to keep it out of global store?
-  // Zustand can handle Files, but let's just stick to the store as defined.
-  const {
-    mutate,
-    data: validationData,
-    isPending: isLoading,
-    isError,
-  } = useValidateInvitation();
-  const { mutateAsync: acceptInvitation, isPending: isAccepting } = useAcceptInvitation();
-  const { uploadAvatar } = useUploadAvatar();
   const token = searchParams.get('token');
+
+  const navigate = useNavigate();
   const supabase = getSupabaseClient();
 
+  const { user } = useAuth();
+
+  const { step, setStep, profileData, setProfileData, companyName, setCompanyName } =
+    useOnboardingStore();
+
+  const {
+    mutate: validateInvitation,
+    data: invitation,
+    isPending: isValidating,
+    isError,
+  } = useValidateInvitation();
+
+  const { mutateAsync: acceptInvitation, isPending: isAccepting } = useAcceptInvitation();
+
+  const { uploadAvatar } = useUploadAvatar();
+
   useEffect(() => {
-    if (token) {
-      mutate(
-        { data: { token } },
-        {
-          onSuccess: () => setStep('welcome'),
-          onError: () => setStep('validating'),
-        },
-      );
-    }
-  }, [token, mutate]);
-
-  const handleProfileComplete = async (pData: {
-    firstName: string;
-    lastName: string;
-    password: string;
-    avatarFile?: File;
-  }) => {
-    setProfileData(pData);
-    setStep('company');
-  };
-
-  const handleCompanyComplete = async (cData: { name: string }) => {
-    setCompanyData(cData);
-    console.log(profileData);
-    if (profileData) {
-      await submitInvitation(profileData, cData.name);
-    }
-  };
-
-  const submitInvitation = async (
-    pData: { firstName: string; lastName: string; password: string; avatarFile?: File },
-    companyName: string,
-  ) => {
     if (!token) return;
 
-    let finalAvatarUrl: string | undefined = undefined;
-    console.log(pData, token, user);
+    validateInvitation(
+      { data: { token } },
+      {
+        onSuccess: () => setStep('welcome'),
+      },
+    );
+  }, [token, validateInvitation, setStep]);
 
-    if (pData.avatarFile && user) {
-      finalAvatarUrl = await uploadAvatar(user.id, pData.avatarFile);
-    }
+  const submitInvitation = async (data: ProfileData) => {
+    if (!token || !user) return;
 
     try {
-      await supabase.auth.updateUser({ password: pData.password });
+      const avatarUrl = data.avatarFile
+        ? await uploadAvatar(user.id, data.avatarFile)
+        : undefined;
+
+      await supabase.auth.updateUser({
+        password: data.password,
+      });
+
       await acceptInvitation({
         data: {
-          companyName,
-          firstName: pData.firstName,
-          lastName: pData.lastName,
           token,
-          avatarUrl: finalAvatarUrl,
+          avatar_url: avatarUrl,
         },
       });
+
       navigate('/dashboard');
     } catch (error) {
       console.error('Error accepting invitation:', error);
-      // Show error toast?
     }
+  };
+
+  const handleProfileComplete = (data: ProfileData) => {
+    setProfileData(data);
+
+    if (invitation?.role === 'owner') {
+      setStep('company');
+      return;
+    }
+
+    submitInvitation(data);
+  };
+
+  const handleCompanyComplete = async (companyName: string) => {
+    setCompanyName(companyName);
+
+    if (!profileData) return;
+
+    await submitInvitation(profileData);
   };
 
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
-        <Card className="w-full max-w-md border-red-200 shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-red-600 flex items-center gap-2">
-              <AlertCircle className="h-6 w-6" />
-              Error de Enlace
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-slate-600 dark:text-slate-300">
-              El enlace proporcionado no es válido. Por favor, asegúrate de haber copiado
-              el enlace completo.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <PageWrapper>
+        <ErrorCard
+          title="Error de Enlace"
+          description="El enlace proporcionado no es válido. Por favor, asegúrate de haber copiado el enlace completo."
+        />
+      </PageWrapper>
     );
   }
 
-  if (isLoading || (step === 'validating' && !isError && !validationData)) {
+  if (isValidating) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
-        <Card className="w-full max-w-md shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-center">Validando Invitación</CardTitle>
-            <CardDescription className="text-center">
-              Por favor espere un momento...
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
-          </CardContent>
-        </Card>
-      </div>
+      <PageWrapper>
+        <LoadingCard />
+      </PageWrapper>
     );
   }
 
-  if (isError || !user) {
+  if (isError || !invitation || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
-        <Card className="w-full max-w-md border-red-200 shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-red-600 flex items-center gap-2">
-              <AlertCircle className="h-6 w-6" />
-              Invitación no válida
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-slate-600 dark:text-slate-300">
-              Esto puede deberse a que el enlace ha expirado, ya ha sido utilizado, o no
-              es correcto.
-            </p>
-          </CardContent>
-          <CardFooter>
-            <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-md w-full border border-red-100 dark:border-red-800">
-              <p className="text-sm font-medium text-red-800 dark:text-red-300 text-center">
-                Por favor comunícate con soporte para obtener ayuda.
-              </p>
-            </div>
-          </CardFooter>
-        </Card>
-      </div>
+      <PageWrapper>
+        <ErrorCard
+          title="Invitación no válida"
+          description="Esto puede deberse a que el enlace ha expirado, ya ha sido utilizado, o no es correcto."
+        />
+      </PageWrapper>
     );
   }
 
-  // Step 1: Welcome
-  if (step === 'welcome' && validationData) {
+  if (step === 'welcome') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
-        <Card className="w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-300">
+      <PageWrapper>
+        <Card className="w-full max-w-md animate-in fade-in zoom-in duration-300 shadow-xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-green-600">
               <CheckCircle2 className="h-6 w-6" />
               ¡Bienvenido!
             </CardTitle>
+
             <CardDescription>
               Tu invitación ha sido validada correctamente.
             </CardDescription>
           </CardHeader>
+
           <CardContent className="space-y-4">
             <p className="text-sm text-slate-600 dark:text-slate-300">
               Hola{' '}
               <strong className="text-slate-900 dark:text-slate-100">
-                {validationData.data.email}
+                {invitation.email}
               </strong>
-              . Estás a un paso de configurar tu cuenta como dueño{' '}
-              {validationData.data.isNewCompany ? ' de tu nueva empresa' : ''}.
+              . Estás a un paso de configurar tu cuenta
+              {invitation.role === 'owner' ? ' y tu nueva empresa.' : '.'}
             </p>
 
-            <div className="p-6 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50/50 dark:bg-slate-800/50 space-y-4">
-              <div className="text-center space-y-2">
+            <div className="space-y-4 rounded-lg border border-slate-200 bg-slate-50/50 p-6 dark:border-slate-700 dark:bg-slate-800/50">
+              <div className="space-y-2 text-center">
                 <p className="font-medium text-slate-900 dark:text-slate-100">
                   Configurar Cuenta
                 </p>
+
                 <p className="text-xs text-muted-foreground">
-                  Completa tu perfil{' '}
-                  {validationData.data.isNewCompany
-                    ? 'y configura tu espacio de trabajo'
-                    : ''}
-                  .
+                  Completa tu perfil
+                  {invitation.role === 'owner'
+                    ? ' y configura tu espacio de trabajo.'
+                    : '.'}
                 </p>
               </div>
+
               <Button className="w-full" onClick={() => setStep('profile')}>
-                Comenzar &rarr;
+                Comenzar →
               </Button>
             </div>
           </CardContent>
         </Card>
-      </div>
+      </PageWrapper>
     );
   }
 
-  // Step 2 & 3: Forms
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
-      <Card className="w-full max-w-lg shadow-xl animate-in fade-in slide-in-from-bottom duration-300">
-        {/* Progress Indicator */}
-        <div className="w-full h-1 bg-slate-100 dark:bg-slate-800">
+    <PageWrapper>
+      <Card className="w-full max-w-lg animate-in fade-in slide-in-from-bottom duration-300 shadow-xl">
+        <div className="h-1 w-full bg-slate-100 dark:bg-slate-800">
           <div
             className="h-full bg-primary transition-all duration-500 ease-out"
             style={{
-              width:
-                step === 'profile'
-                  ? validationData?.data.isNewCompany
-                    ? '50%'
-                    : '100%'
-                  : '100%',
+              width: step === 'profile' ? '50%' : '100%',
             }}
           />
         </div>
@@ -247,21 +244,22 @@ const Onboarding = () => {
             <OnboardingProfileForm
               onNext={handleProfileComplete}
               onBack={() => setStep('welcome')}
-              initialEmail={validationData?.data.email}
+              initialEmail={invitation.email}
               initialData={profileData}
             />
           )}
+
           {step === 'company' && (
             <OnboardingCompanyForm
               onComplete={handleCompanyComplete}
               onBack={() => setStep('profile')}
               isLoading={isAccepting}
-              initialData={companyData}
+              companyName={companyName}
             />
           )}
         </CardContent>
       </Card>
-    </div>
+    </PageWrapper>
   );
 };
 

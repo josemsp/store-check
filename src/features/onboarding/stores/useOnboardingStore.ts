@@ -1,24 +1,31 @@
 import { create } from 'zustand';
 
+type Step = 'validating' | 'welcome' | 'profile' | 'company';
+
+export type ProfileData = {
+  firstName: string;
+  lastName: string;
+  password: string;
+  avatarFile?: File;
+};
+
 interface OnboardingState {
-  profileData: {
-    firstName: string;
-    lastName: string;
-    password: string;
-    avatarFile?: File;
-  } | null;
-  companyData: {
-    name: string;
-  } | null;
-  setProfileData: (data: OnboardingState['profileData']) => void;
-  setCompanyData: (data: OnboardingState['companyData']) => void;
+  step: Step;
+  setStep: (step: Step) => void;
+  profileData: ProfileData | null;
+  companyName: string;
+  setProfileData: (data: ProfileData) => void;
+  setCompanyName: (data: string) => void;
   clearData: () => void;
 }
 
 export const useOnboardingStore = create<OnboardingState>((set) => ({
+  step: 'validating',
   profileData: null,
-  companyData: null,
+  companyName: '',
+
+  setStep: (step) => set({ step }),
   setProfileData: (data) => set({ profileData: data }),
-  setCompanyData: (data) => set({ companyData: data }),
-  clearData: () => set({ profileData: null, companyData: null }),
+  setCompanyName: (data) => set({ companyName: data }),
+  clearData: () => set({ profileData: null, companyName: '' }),
 }));

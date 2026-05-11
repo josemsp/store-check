@@ -197,7 +197,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
 
   const navMainItems: NavMainItem[] = [...data.navMain];
 
-  if (profile?.isRoot) {
+  if (profile?.is_root) {
     // Add Invitations menu item for root users
     navMainItems.push({
       title: 'Invitaciones',

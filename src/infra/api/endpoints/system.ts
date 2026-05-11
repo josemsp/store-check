@@ -174,18 +174,10 @@ export function useGetHealthCheckController<
 export const getGetHealthCheckControllerResponseMock = (
   overrideResponse: Partial<GetHealthCheckController200> = {},
 ): GetHealthCheckController200 => ({
-  success: faker.datatype.boolean(),
-  message: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  data: {
-    database: {
-      status: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      latency: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    },
+  database: {
+    status: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    latency: faker.string.alpha({ length: { min: 10, max: 20 } }),
   },
-  meta: { timestamp: faker.string.alpha({ length: { min: 10, max: 20 } }) },
   ...overrideResponse,
 });
 

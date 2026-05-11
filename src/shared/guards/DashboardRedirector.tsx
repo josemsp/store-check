@@ -11,7 +11,7 @@ export default function DashboardRedirector() {
     return <FullPageLoader />;
   }
 
-  if (profile?.isRoot) {
+  if (profile?.is_root) {
     return <Navigate to="/root-dashboard" replace />;
   }
 

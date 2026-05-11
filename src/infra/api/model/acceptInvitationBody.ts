@@ -8,10 +8,7 @@
 
 export type AcceptInvitationBody = {
   token: string;
-  avatarUrl?: string;
-  /** @minLength 1 */
-  firstName: string;
-  /** @minLength 1 */
-  lastName: string;
-  companyName: string;
+  avatar_url?: string;
+  business_name?: string;
+  logo_url?: string;
 };

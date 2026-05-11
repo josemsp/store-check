@@ -1,18 +1,12 @@
-export async function imageToWebp(file: File, quality = 0.8): Promise<File> {
-  const bitmap = await createImageBitmap(file);
+import imageCompression from 'browser-image-compression';
 
-  const canvas = document.createElement('canvas');
-  canvas.width = bitmap.width;
-  canvas.height = bitmap.height;
+export async function imageToWebp(file: File, quality = 0.3): Promise<File> {
+  const compressedFile = await imageCompression(file, {
+    maxSizeMB: quality,
+    maxWidthOrHeight: 512,
+    useWebWorker: true,
+    fileType: 'image/webp',
+  });
 
-  const ctx = canvas.getContext('2d');
-  if (!ctx) throw new Error('Canvas error');
-
-  ctx.drawImage(bitmap, 0, 0);
-
-  const blob = await new Promise<Blob>((resolve) =>
-    canvas.toBlob((b) => resolve(b!), 'image/webp', quality),
-  );
-
-  return new File([blob], 'avatar.webp', { type: 'image/webp' });
+  return compressedFile;
 }

@@ -27,29 +27,18 @@ import type {
 
 import { customAxios } from '../axios.client';
 import type {
-  AssignUserPermissions400,
-  AssignUserPermissions401,
-  AssignUserPermissions404,
-  AssignUserPermissions500,
-  AssignUserPermissionsBody,
   GetMe401,
   GetMe404,
   GetMe500,
   GetUser401,
   GetUser404,
   GetUser500,
-  UpdateUser400,
   UpdateUser401,
   UpdateUser404,
   UpdateUser500,
   UpdateUserBody,
 } from '../model';
-import type {
-  AssignUserPermissions200,
-  GetMe200,
-  GetUser200,
-  UpdateUser200,
-} from '../model';
+import type { GetMe200, GetUser200, UpdateUser200 } from '../model';
 
 /**
  * @summary Get a user
@@ -274,7 +263,7 @@ export const updateUser = (
 };
 
 export const getUpdateUserMutationOptions = <
-  TError = UpdateUser400 | UpdateUser401 | UpdateUser404 | UpdateUser500,
+  TError = UpdateUser401 | UpdateUser404 | UpdateUser500,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -314,17 +303,13 @@ export type UpdateUserMutationResult = NonNullable<
   Awaited<ReturnType<typeof updateUser>>
 >;
 export type UpdateUserMutationBody = UpdateUserBody;
-export type UpdateUserMutationError =
-  | UpdateUser400
-  | UpdateUser401
-  | UpdateUser404
-  | UpdateUser500;
+export type UpdateUserMutationError = UpdateUser401 | UpdateUser404 | UpdateUser500;
 
 /**
  * @summary Update a user
  */
 export const useUpdateUser = <
-  TError = UpdateUser400 | UpdateUser401 | UpdateUser404 | UpdateUser500,
+  TError = UpdateUser401 | UpdateUser404 | UpdateUser500,
   TContext = unknown,
 >(
   options?: {
@@ -344,102 +329,6 @@ export const useUpdateUser = <
 > => {
   return useMutation(getUpdateUserMutationOptions(options), queryClient);
 };
-/**
- * @summary Assign permissions to a user
- */
-export const assignUserPermissions = (
-  id: string,
-  assignUserPermissionsBody: AssignUserPermissionsBody,
-  signal?: AbortSignal,
-) => {
-  return customAxios<AssignUserPermissions200>({
-    url: `/api/v1/users/${id}/permissions`,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    data: assignUserPermissionsBody,
-    signal,
-  });
-};
-
-export const getAssignUserPermissionsMutationOptions = <
-  TError =
-    | AssignUserPermissions400
-    | AssignUserPermissions401
-    | AssignUserPermissions404
-    | AssignUserPermissions500,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof assignUserPermissions>>,
-    TError,
-    { id: string; data: AssignUserPermissionsBody },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof assignUserPermissions>>,
-  TError,
-  { id: string; data: AssignUserPermissionsBody },
-  TContext
-> => {
-  const mutationKey = ['assignUserPermissions'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof assignUserPermissions>>,
-    { id: string; data: AssignUserPermissionsBody }
-  > = (props) => {
-    const { id, data } = props ?? {};
-
-    return assignUserPermissions(id, data);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type AssignUserPermissionsMutationResult = NonNullable<
-  Awaited<ReturnType<typeof assignUserPermissions>>
->;
-export type AssignUserPermissionsMutationBody = AssignUserPermissionsBody;
-export type AssignUserPermissionsMutationError =
-  | AssignUserPermissions400
-  | AssignUserPermissions401
-  | AssignUserPermissions404
-  | AssignUserPermissions500;
-
-/**
- * @summary Assign permissions to a user
- */
-export const useAssignUserPermissions = <
-  TError =
-    | AssignUserPermissions400
-    | AssignUserPermissions401
-    | AssignUserPermissions404
-    | AssignUserPermissions500,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof assignUserPermissions>>,
-      TError,
-      { id: string; data: AssignUserPermissionsBody },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof assignUserPermissions>>,
-  TError,
-  { id: string; data: AssignUserPermissionsBody },
-  TContext
-> => {
-  return useMutation(getAssignUserPermissionsMutationOptions(options), queryClient);
-};
 
 export const getGetMeResponseMock = (
   overrideResponse: Partial<GetMe200> = {},
@@ -450,70 +339,81 @@ export const getGetMeResponseMock = (
     undefined,
   ]),
   data: {
-    id: faker.string.uuid(),
-    email: faker.internet.email(),
-    firstName: faker.helpers.arrayElement([
+    avatar_url: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    lastName: faker.helpers.arrayElement([
+    branch_id: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    fullName: faker.helpers.arrayElement([
+    branch_name: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    avatarUrl: faker.helpers.arrayElement([
+    business_name: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    status: faker.helpers.arrayElement(['active', 'inactive', 'deleted'] as const),
-    companyId: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([faker.string.uuid(), null]),
+    email: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([faker.internet.email(), null]),
       null,
     ]),
-    companyName: faker.helpers.arrayElement([
+    is_active: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+    is_owner: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+    is_root: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+    logo_url: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    isRoot: faker.datatype.boolean(),
-    isOwner: faker.datatype.boolean(),
-    permissions: Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1,
-    ).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
-    roleId: faker.helpers.arrayElement([
+    name: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    roleName: faker.helpers.arrayElement([
+    owner_id: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    createdAt: faker.date.past().toISOString().slice(0, 19) + 'Z',
-    updatedAt: faker.date.past().toISOString().slice(0, 19) + 'Z',
+    role: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          'owner',
+          'manager',
+          'warehouse',
+          'branch_staff',
+        ] as const),
+        null,
+      ]),
+      null,
+    ]),
+    user_id: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
+      ]),
+      null,
+    ]),
   },
   meta: { timestamp: faker.string.alpha({ length: { min: 10, max: 20 } }) },
   ...overrideResponse,
@@ -528,70 +428,81 @@ export const getGetUserResponseMock = (
     undefined,
   ]),
   data: {
-    id: faker.string.uuid(),
-    email: faker.internet.email(),
-    firstName: faker.helpers.arrayElement([
+    avatar_url: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    lastName: faker.helpers.arrayElement([
+    branch_id: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    fullName: faker.helpers.arrayElement([
+    branch_name: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    avatarUrl: faker.helpers.arrayElement([
+    business_name: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    status: faker.helpers.arrayElement(['active', 'inactive', 'deleted'] as const),
-    companyId: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([faker.string.uuid(), null]),
+    email: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([faker.internet.email(), null]),
       null,
     ]),
-    companyName: faker.helpers.arrayElement([
+    is_active: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+    is_owner: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+    is_root: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+    logo_url: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    isRoot: faker.datatype.boolean(),
-    isOwner: faker.datatype.boolean(),
-    permissions: Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1,
-    ).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
-    roleId: faker.helpers.arrayElement([
+    name: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    roleName: faker.helpers.arrayElement([
+    owner_id: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    createdAt: faker.date.past().toISOString().slice(0, 19) + 'Z',
-    updatedAt: faker.date.past().toISOString().slice(0, 19) + 'Z',
+    role: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          'owner',
+          'manager',
+          'warehouse',
+          'branch_staff',
+        ] as const),
+        null,
+      ]),
+      null,
+    ]),
+    user_id: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
+      ]),
+      null,
+    ]),
   },
   meta: { timestamp: faker.string.alpha({ length: { min: 10, max: 20 } }) },
   ...overrideResponse,
@@ -606,111 +517,81 @@ export const getUpdateUserResponseMock = (
     undefined,
   ]),
   data: {
-    email: faker.helpers.arrayElement([faker.internet.email(), undefined]),
-    firstName: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-      undefined,
-    ]),
-    lastName: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-      undefined,
-    ]),
-    avatarUrl: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-      undefined,
-    ]),
-    status: faker.helpers.arrayElement([
-      faker.helpers.arrayElement(['active', 'inactive', 'deleted'] as const),
-      undefined,
-    ]),
-    roleId: faker.helpers.arrayElement([faker.string.uuid(), undefined]),
-  },
-  meta: { timestamp: faker.string.alpha({ length: { min: 10, max: 20 } }) },
-  ...overrideResponse,
-});
-
-export const getAssignUserPermissionsResponseMock = (
-  overrideResponse: Partial<AssignUserPermissions200> = {},
-): AssignUserPermissions200 => ({
-  success: faker.datatype.boolean(),
-  message: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  data: {
-    id: faker.string.uuid(),
-    email: faker.internet.email(),
-    firstName: faker.helpers.arrayElement([
+    avatar_url: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    lastName: faker.helpers.arrayElement([
+    branch_id: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    fullName: faker.helpers.arrayElement([
+    branch_name: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    avatarUrl: faker.helpers.arrayElement([
+    business_name: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    status: faker.helpers.arrayElement(['active', 'inactive', 'deleted'] as const),
-    companyId: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([faker.string.uuid(), null]),
+    email: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([faker.internet.email(), null]),
       null,
     ]),
-    companyName: faker.helpers.arrayElement([
+    is_active: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+    is_owner: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+    is_root: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+    logo_url: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    isRoot: faker.datatype.boolean(),
-    isOwner: faker.datatype.boolean(),
-    permissions: Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1,
-    ).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
-    roleId: faker.helpers.arrayElement([
+    name: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    roleName: faker.helpers.arrayElement([
+    owner_id: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         null,
       ]),
       null,
     ]),
-    createdAt: faker.date.past().toISOString().slice(0, 19) + 'Z',
-    updatedAt: faker.date.past().toISOString().slice(0, 19) + 'Z',
+    role: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          'owner',
+          'manager',
+          'warehouse',
+          'branch_staff',
+        ] as const),
+        null,
+      ]),
+      null,
+    ]),
+    user_id: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
+      ]),
+      null,
+    ]),
   },
   meta: { timestamp: faker.string.alpha({ length: { min: 10, max: 20 } }) },
   ...overrideResponse,
@@ -793,35 +674,8 @@ export const getUpdateUserMockHandler = (
     options,
   );
 };
-
-export const getAssignUserPermissionsMockHandler = (
-  overrideResponse?:
-    | AssignUserPermissions200
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<AssignUserPermissions200> | AssignUserPermissions200),
-  options?: RequestHandlerOptions,
-) => {
-  return http.post(
-    '*/api/v1/users/:id/permissions',
-    async (info) => {
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === 'function'
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getAssignUserPermissionsResponseMock(),
-        ),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
-    },
-    options,
-  );
-};
 export const getUsersMock = () => [
   getGetMeMockHandler(),
   getGetUserMockHandler(),
   getUpdateUserMockHandler(),
-  getAssignUserPermissionsMockHandler(),
 ];

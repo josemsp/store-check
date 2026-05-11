@@ -5,31 +5,33 @@
  * API for storage and management of products and users
  * OpenAPI spec version: 1.0.0
  */
-import type { GetMe200DataStatus } from './getMe200DataStatus';
+import type { GetMe200DataRole } from './getMe200DataRole';
 
 export type GetMe200Data = {
-  id: string;
-  email: string;
   /** @nullable */
-  firstName: string | null;
+  avatar_url: string | null;
   /** @nullable */
-  lastName: string | null;
+  branch_id: string | null;
   /** @nullable */
-  fullName: string | null;
+  branch_name: string | null;
   /** @nullable */
-  avatarUrl: string | null;
-  status: GetMe200DataStatus;
+  business_name: string | null;
   /** @nullable */
-  companyId: string | null;
+  email: string | null;
   /** @nullable */
-  companyName: string | null;
-  isRoot: boolean;
-  isOwner: boolean;
-  permissions: string[];
+  is_active: boolean | null;
   /** @nullable */
-  roleId: string | null;
+  is_owner: boolean | null;
   /** @nullable */
-  roleName: string | null;
-  createdAt: string;
-  updatedAt: string;
+  is_root: boolean | null;
+  /** @nullable */
+  logo_url: string | null;
+  /** @nullable */
+  name: string | null;
+  /** @nullable */
+  owner_id: string | null;
+  /** @nullable */
+  role: GetMe200DataRole;
+  /** @nullable */
+  user_id: string | null;
 };

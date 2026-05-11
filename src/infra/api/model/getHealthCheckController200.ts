@@ -5,12 +5,8 @@
  * API for storage and management of products and users
  * OpenAPI spec version: 1.0.0
  */
-import type { GetHealthCheckController200Data } from './getHealthCheckController200Data';
-import type { GetHealthCheckController200Meta } from './getHealthCheckController200Meta';
+import type { GetHealthCheckController200Database } from './getHealthCheckController200Database';
 
 export type GetHealthCheckController200 = {
-  success: boolean;
-  message?: string;
-  data: GetHealthCheckController200Data;
-  meta: GetHealthCheckController200Meta;
+  database: GetHealthCheckController200Database;
 };

@@ -3,7 +3,7 @@ import { createBrowserRouter } from 'react-router';
 
 import AppLayout from '@/app/layouts/AppLayout';
 import ForgotPassword from '@/features/auth/pages/ForgotPassword';
-import Signin from '@/features/auth/pages/Singnin';
+import Signin from '@/features/auth/pages/Signin';
 import { FullPageLoader } from '@/shared/components/ui/loader';
 import DashboardRedirector from '@/shared/guards/DashboardRedirector';
 import NotFound from '@/shared/pages/NotFound';
@@ -67,7 +67,7 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       {
-        element: <RoleGuard allowedRoles={['root']} />,
+        element: <RoleGuard onlyRoot redirectTo="/" />,
         children: [
           {
             path: 'root-dashboard',

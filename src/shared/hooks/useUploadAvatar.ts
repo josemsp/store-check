@@ -11,14 +11,14 @@ export function useUploadAvatar() {
     const supabase = getSupabaseClient();
     const webpFile = await imageToWebp(file);
 
-    // 1. Borrar todas las imágenes viejas de la carpeta del usuario
+    // Delete all previous images of the user
     const { data: existingFiles } = await supabase.storage.from('avatars').list(userId);
     if (existingFiles && existingFiles.length > 0) {
       const pathsToRemove = existingFiles.map((f) => `${userId}/${f.name}`);
       await supabase.storage.from('avatars').remove(pathsToRemove);
     }
 
-    // 2. Crear un archivo COMPLETAMENTE NUEVO
+    // Create a NEW file
     const path = `${userId}/profile_${Date.now()}.webp`;
 
     const { error: uploadError } = await supabase.storage
@@ -34,7 +34,7 @@ export function useUploadAvatar() {
       data: { publicUrl },
     } = supabase.storage.from('avatars').getPublicUrl(path);
 
-    // Al ser un nombre nuevo, nunca habrá caché en el CDN
+    // Since it's a new name, there will never be a cache in the CDN
     return publicUrl;
   };
 

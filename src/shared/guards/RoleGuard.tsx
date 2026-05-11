@@ -4,11 +4,16 @@ import { useProfileContext } from '@/app/providers/ProfileProvider';
 import { FullPageLoader } from '@/shared/components/ui/loader';
 
 interface RoleGuardProps {
-  allowedRoles: string[];
+  onlyRoot?: boolean;
+  allowedRoles?: string[];
   redirectTo?: string;
 }
 
-export default function RoleGuard({ allowedRoles, redirectTo = '/' }: RoleGuardProps) {
+export default function RoleGuard({
+  allowedRoles = [],
+  redirectTo = '/',
+  onlyRoot = false,
+}: RoleGuardProps) {
   const { data: profile, isLoading } = useProfileContext();
 
   // Show loader while profile is being fetched to prevent flickering
@@ -16,9 +21,11 @@ export default function RoleGuard({ allowedRoles, redirectTo = '/' }: RoleGuardP
     return <FullPageLoader />;
   }
 
-  const hasRole = allowedRoles.includes(profile?.roleName || '');
+  if (onlyRoot && !profile?.is_root) {
+    return <Navigate to={redirectTo} replace />;
+  }
 
-  if (!hasRole) {
+  if (allowedRoles.length > 0 && !allowedRoles.includes(profile?.role ?? '')) {
     return <Navigate to={redirectTo} replace />;
   }
 

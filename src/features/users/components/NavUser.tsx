@@ -25,10 +25,15 @@ export function NavUser({ className }: { className?: string }) {
   const { isMobile } = useSidebar();
   const { logout } = useAuth();
   const { data: profile } = useProfileContext();
+  console.log('PROFILE:', profile);
   const navigate = useNavigate();
 
   const Initials = () => {
-    return (profile?.firstName || '').charAt(0) + (profile?.lastName || '').charAt(0);
+    const nameParts = profile?.name?.split(' ') || [];
+    const firstInitial = nameParts[0]?.charAt(0) || '';
+    const lastInitial =
+      nameParts.length > 1 ? nameParts[nameParts.length - 1]?.charAt(0) : '';
+    return firstInitial + lastInitial;
   };
 
   return (
@@ -41,12 +46,12 @@ export function NavUser({ className }: { className?: string }) {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={profile?.avatarUrl || ''} alt={profile?.email} />
+                <AvatarImage src={profile?.avatar_url || ''} alt={profile?.email ?? ''} />
                 <AvatarFallback className="rounded-lg">{Initials()}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{profile?.fullName}</span>
-                <span className="truncate text-xs">{profile?.roleName}</span>
+                <span className="truncate font-medium">{profile?.name}</span>
+                <span className="truncate text-xs">{profile?.role}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -60,12 +65,15 @@ export function NavUser({ className }: { className?: string }) {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={profile?.avatarUrl || ''} alt={profile?.email} />
+                  <AvatarImage
+                    src={profile?.avatar_url || ''}
+                    alt={profile?.email ?? ''}
+                  />
                   <AvatarFallback className="rounded-lg">{Initials()}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{profile?.fullName}</span>
-                  <span className="truncate text-xs">{profile?.roleName}</span>
+                  <span className="truncate font-medium">{profile?.name}</span>
+                  <span className="truncate text-xs">{profile?.role}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -73,7 +81,7 @@ export function NavUser({ className }: { className?: string }) {
             <DropdownMenuGroup>
               <DropdownMenuItem
                 onClick={() =>
-                  navigate(profile?.isRoot ? '/root-dashboard/profile' : '/profile')
+                  navigate(profile?.is_root ? '/root-dashboard/profile' : '/profile')
                 }
               >
                 <BadgeCheck />
