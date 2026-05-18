@@ -72,15 +72,27 @@ const LoadingCard = () => (
 const Onboarding = () => {
   const [searchParams] = useSearchParams();
 
-  const token = searchParams.get('token');
-
+  const urlToken = searchParams.get('token');
   const navigate = useNavigate();
   const supabase = getSupabaseClient();
 
   const { user } = useAuth();
 
-  const { step, setStep, profileData, setProfileData, companyName, setCompanyName } =
-    useOnboardingStore();
+  const {
+    step,
+    token: storedToken,
+    email: storedEmail,
+    role: storedRole,
+    profileData,
+    setStep,
+    setInvitation,
+    setProfileData,
+    companyName,
+    setCompanyName,
+    clearData,
+  } = useOnboardingStore();
+
+  const token = urlToken || storedToken;
 
   const {
     mutate: validateInvitation,
@@ -96,13 +108,17 @@ const Onboarding = () => {
   useEffect(() => {
     if (!token) return;
 
-    validateInvitation(
-      { data: { token } },
-      {
-        onSuccess: () => setStep('welcome'),
-      },
-    );
-  }, [token, validateInvitation, setStep]);
+    if (urlToken) {
+      validateInvitation(
+        { data: { token } },
+        {
+          onSuccess: (res) => {
+            setInvitation({ token, email: res.email, role: res.role });
+          },
+        },
+      );
+    }
+  }, [urlToken, token, validateInvitation, setInvitation]);
 
   const submitInvitation = async (data: ProfileData) => {
     if (!token || !user) return;
@@ -123,7 +139,8 @@ const Onboarding = () => {
         },
       });
 
-      navigate('/dashboard');
+      clearData();
+      navigate('/');
     } catch (error) {
       console.error('Error accepting invitation:', error);
     }
@@ -132,7 +149,9 @@ const Onboarding = () => {
   const handleProfileComplete = (data: ProfileData) => {
     setProfileData(data);
 
-    if (invitation?.role === 'owner') {
+    const role = invitation?.role || storedRole;
+
+    if (role === 'owner') {
       setStep('company');
       return;
     }
@@ -147,6 +166,9 @@ const Onboarding = () => {
 
     await submitInvitation(profileData);
   };
+
+  const displayEmail = invitation?.email || storedEmail;
+  const displayRole = invitation?.role || storedRole;
 
   if (!token) {
     return (
@@ -167,7 +189,7 @@ const Onboarding = () => {
     );
   }
 
-  if (isError || !invitation || !user) {
+  if (isError || !user) {
     return (
       <PageWrapper>
         <ErrorCard
@@ -197,10 +219,10 @@ const Onboarding = () => {
             <p className="text-sm text-slate-600 dark:text-slate-300">
               Hola{' '}
               <strong className="text-slate-900 dark:text-slate-100">
-                {invitation.email}
+                {displayEmail}
               </strong>
               . Estás a un paso de configurar tu cuenta
-              {invitation.role === 'owner' ? ' y tu nueva empresa.' : '.'}
+              {displayRole === 'owner' ? ' y tu nueva empresa.' : '.'}
             </p>
 
             <div className="space-y-4 rounded-lg border border-slate-200 bg-slate-50/50 p-6 dark:border-slate-700 dark:bg-slate-800/50">
@@ -211,9 +233,7 @@ const Onboarding = () => {
 
                 <p className="text-xs text-muted-foreground">
                   Completa tu perfil
-                  {invitation.role === 'owner'
-                    ? ' y configura tu espacio de trabajo.'
-                    : '.'}
+                  {displayRole === 'owner' ? ' y configura tu espacio de trabajo.' : '.'}
                 </p>
               </div>
 
@@ -244,7 +264,7 @@ const Onboarding = () => {
             <OnboardingProfileForm
               onNext={handleProfileComplete}
               onBack={() => setStep('welcome')}
-              initialEmail={invitation.email}
+              initialEmail={displayEmail}
               initialData={profileData}
             />
           )}

@@ -18,7 +18,7 @@ import type { ProfileData } from '../stores/use-onboarding-store';
 interface OnboardingProfileFormProps {
   onNext: (data: ProfileData) => void;
   onBack: () => void;
-  initialEmail?: string;
+  initialEmail?: string | null;
   initialData?: ProfileData | null;
 }
 
@@ -93,7 +93,7 @@ export function OnboardingProfileForm({
           >
             <AvatarImage src={avatarPreview || ''} alt="Avatar" />
             <AvatarFallback className="text-xl">
-              {initialEmail?.substring(0, 2).toUpperCase() || 'YO'}
+              {initialEmail?.substring(0, 2).toUpperCase() ?? 'YO'}
             </AvatarFallback>
           </Avatar>
           <div
@@ -143,7 +143,7 @@ export function OnboardingProfileForm({
           label="Correo Electrónico"
           className="space-y-2"
           inputProps={{
-            value: initialEmail || '',
+            value: initialEmail ?? '',
             disabled: true,
           }}
         />
