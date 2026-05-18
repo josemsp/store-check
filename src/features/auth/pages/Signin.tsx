@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 
 import StoreCheckLogo from '@/app/assets/images/store-check-logo.png';
-import { useAuth } from '@/app/providers/AuthProvider';
+import { useAuth } from '@/app/providers/auth-provider';
 import { Button } from '@/shared/components/ui/button';
 import {
   Card,
@@ -17,7 +17,7 @@ import {
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
-import { ModeThemeToggle } from '@/shared/layout/ModeThemeToggle';
+import { ModeThemeToggle } from '@/shared/layout/mode-theme-toggle';
 import { notify } from '@/shared/notifications/toast';
 
 const Signin = () => {

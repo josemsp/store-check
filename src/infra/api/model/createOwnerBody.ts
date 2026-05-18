@@ -10,6 +10,6 @@ export type CreateOwnerBody = {
   name: string;
   email: string;
   phone?: string;
-  businessName: string;
-  logoUrl?: string;
+  business_name: string;
+  logo_url?: string;
 };

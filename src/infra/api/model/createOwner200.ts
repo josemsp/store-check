@@ -5,17 +5,12 @@
  * API for storage and management of products and users
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateOwner200Data } from './createOwner200Data';
+import type { CreateOwner200Meta } from './createOwner200Meta';
 
 export type CreateOwner200 = {
-  id: string;
-  name: string;
-  email: string;
-  /** @nullable */
-  phone: string | null;
-  businessName: string;
-  /** @nullable */
-  logoUrl: string | null;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  success: boolean;
+  message?: string;
+  data: CreateOwner200Data;
+  meta: CreateOwner200Meta;
 };

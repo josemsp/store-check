@@ -32,12 +32,6 @@ import type {
   CreateOwner404,
   CreateOwner500,
   CreateOwnerBody,
-  DeleteOwner401,
-  DeleteOwner404,
-  DeleteOwner500,
-  GetMeOwner401,
-  GetMeOwner404,
-  GetMeOwner500,
   GetOwner401,
   GetOwner404,
   GetOwner500,
@@ -54,118 +48,10 @@ import type {
 } from '../model';
 import type {
   CreateOwner200,
-  GetMeOwner200,
   GetOwner200,
   ListOwners200,
   UpdateOwner200,
 } from '../model';
-
-/**
- * @summary Get current owner
- */
-export const getMeOwner = (signal?: AbortSignal) => {
-  return customAxios<GetMeOwner200>({ url: `/api/v1/owners/me`, method: 'GET', signal });
-};
-
-export const getGetMeOwnerQueryKey = () => {
-  return [`/api/v1/owners/me`] as const;
-};
-
-export const getGetMeOwnerQueryOptions = <
-  TData = Awaited<ReturnType<typeof getMeOwner>>,
-  TError = GetMeOwner401 | GetMeOwner404 | GetMeOwner500,
->(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeOwner>>, TError, TData>>;
-}) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getGetMeOwnerQueryKey();
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMeOwner>>> = ({ signal }) =>
-    getMeOwner(signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getMeOwner>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type GetMeOwnerQueryResult = NonNullable<Awaited<ReturnType<typeof getMeOwner>>>;
-export type GetMeOwnerQueryError = GetMeOwner401 | GetMeOwner404 | GetMeOwner500;
-
-export function useGetMeOwner<
-  TData = Awaited<ReturnType<typeof getMeOwner>>,
-  TError = GetMeOwner401 | GetMeOwner404 | GetMeOwner500,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getMeOwner>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getMeOwner>>,
-          TError,
-          Awaited<ReturnType<typeof getMeOwner>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useGetMeOwner<
-  TData = Awaited<ReturnType<typeof getMeOwner>>,
-  TError = GetMeOwner401 | GetMeOwner404 | GetMeOwner500,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getMeOwner>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getMeOwner>>,
-          TError,
-          Awaited<ReturnType<typeof getMeOwner>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useGetMeOwner<
-  TData = Awaited<ReturnType<typeof getMeOwner>>,
-  TError = GetMeOwner401 | GetMeOwner404 | GetMeOwner500,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getMeOwner>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-/**
- * @summary Get current owner
- */
-
-export function useGetMeOwner<
-  TData = Awaited<ReturnType<typeof getMeOwner>>,
-  TError = GetMeOwner401 | GetMeOwner404 | GetMeOwner500,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getMeOwner>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getGetMeOwnerQueryOptions(options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
-
-  return { ...query, queryKey: queryOptions.queryKey };
-}
 
 /**
  * @summary List owners
@@ -572,243 +458,159 @@ export const useUpdateOwner = <
 > => {
   return useMutation(getUpdateOwnerMutationOptions(options), queryClient);
 };
-/**
- * @summary Delete an owner
- */
-export const deleteOwner = (id: string, signal?: AbortSignal) => {
-  return customAxios<string>({ url: `/api/v1/owners/${id}`, method: 'DELETE', signal });
-};
-
-export const getDeleteOwnerMutationOptions = <
-  TError = DeleteOwner401 | DeleteOwner404 | DeleteOwner500,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteOwner>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteOwner>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationKey = ['deleteOwner'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteOwner>>,
-    { id: string }
-  > = (props) => {
-    const { id } = props ?? {};
-
-    return deleteOwner(id);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type DeleteOwnerMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteOwner>>
->;
-
-export type DeleteOwnerMutationError = DeleteOwner401 | DeleteOwner404 | DeleteOwner500;
-
-/**
- * @summary Delete an owner
- */
-export const useDeleteOwner = <
-  TError = DeleteOwner401 | DeleteOwner404 | DeleteOwner500,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deleteOwner>>,
-      TError,
-      { id: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof deleteOwner>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  return useMutation(getDeleteOwnerMutationOptions(options), queryClient);
-};
-
-export const getGetMeOwnerResponseMock = (
-  overrideResponse: Partial<GetMeOwner200> = {},
-): GetMeOwner200 => ({
-  id: faker.string.uuid(),
-  name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  email: faker.internet.email(),
-  phone: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    null,
-  ]),
-  businessName: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  logoUrl: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    null,
-  ]),
-  isActive: faker.datatype.boolean(),
-  createdAt: faker.date.past().toISOString().slice(0, 19) + 'Z',
-  updatedAt: faker.date.past().toISOString().slice(0, 19) + 'Z',
-  ...overrideResponse,
-});
 
 export const getListOwnersResponseMock = (
   overrideResponse: Partial<ListOwners200> = {},
 ): ListOwners200 => ({
-  id: faker.string.uuid(),
-  name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  email: faker.internet.email(),
-  phone: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
+  success: faker.datatype.boolean(),
+  message: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  data: Array.from(
+    { length: faker.number.int({ min: 1, max: 10 }) },
+    (_, i) => i + 1,
+  ).map(() => ({
+    id: faker.string.uuid(),
+    name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    email: faker.internet.email(),
+    phone: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
+      ]),
       null,
     ]),
-    null,
-  ]),
-  businessName: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  logoUrl: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
+    business_name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    logo_url: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
+      ]),
       null,
     ]),
-    null,
-  ]),
-  isActive: faker.datatype.boolean(),
-  createdAt: faker.date.past().toISOString().slice(0, 19) + 'Z',
-  updatedAt: faker.date.past().toISOString().slice(0, 19) + 'Z',
+    is_active: faker.datatype.boolean(),
+    created_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
+    updated_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
+  })),
+  meta: {
+    page: faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+    page_size: faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+    total: faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+    total_pages: faker.number.float({
+      min: undefined,
+      max: undefined,
+      fractionDigits: 2,
+    }),
+    timestamp: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  },
   ...overrideResponse,
 });
 
 export const getCreateOwnerResponseMock = (
   overrideResponse: Partial<CreateOwner200> = {},
 ): CreateOwner200 => ({
-  id: faker.string.uuid(),
-  name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  email: faker.internet.email(),
-  phone: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
+  success: faker.datatype.boolean(),
+  message: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  data: {
+    id: faker.string.uuid(),
+    name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    email: faker.internet.email(),
+    phone: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
+      ]),
       null,
     ]),
-    null,
-  ]),
-  businessName: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  logoUrl: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
+    business_name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    logo_url: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
+      ]),
       null,
     ]),
-    null,
-  ]),
-  isActive: faker.datatype.boolean(),
-  createdAt: faker.date.past().toISOString().slice(0, 19) + 'Z',
-  updatedAt: faker.date.past().toISOString().slice(0, 19) + 'Z',
+    is_active: faker.datatype.boolean(),
+    created_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
+    updated_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
+  },
+  meta: { timestamp: faker.string.alpha({ length: { min: 10, max: 20 } }) },
   ...overrideResponse,
 });
 
 export const getGetOwnerResponseMock = (
   overrideResponse: Partial<GetOwner200> = {},
 ): GetOwner200 => ({
-  id: faker.string.uuid(),
-  name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  email: faker.internet.email(),
-  phone: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
+  success: faker.datatype.boolean(),
+  message: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  data: {
+    id: faker.string.uuid(),
+    name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    email: faker.internet.email(),
+    phone: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
+      ]),
       null,
     ]),
-    null,
-  ]),
-  businessName: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  logoUrl: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
+    business_name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    logo_url: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
+      ]),
       null,
     ]),
-    null,
-  ]),
-  isActive: faker.datatype.boolean(),
-  createdAt: faker.date.past().toISOString().slice(0, 19) + 'Z',
-  updatedAt: faker.date.past().toISOString().slice(0, 19) + 'Z',
+    is_active: faker.datatype.boolean(),
+    created_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
+    updated_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
+  },
+  meta: { timestamp: faker.string.alpha({ length: { min: 10, max: 20 } }) },
   ...overrideResponse,
 });
 
 export const getUpdateOwnerResponseMock = (
   overrideResponse: Partial<UpdateOwner200> = {},
 ): UpdateOwner200 => ({
-  id: faker.string.uuid(),
-  name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  email: faker.internet.email(),
-  phone: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
+  success: faker.datatype.boolean(),
+  message: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  data: {
+    id: faker.string.uuid(),
+    name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    email: faker.internet.email(),
+    phone: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
+      ]),
       null,
     ]),
-    null,
-  ]),
-  businessName: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  logoUrl: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
+    business_name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    logo_url: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
+      ]),
       null,
     ]),
-    null,
-  ]),
-  isActive: faker.datatype.boolean(),
-  createdAt: faker.date.past().toISOString().slice(0, 19) + 'Z',
-  updatedAt: faker.date.past().toISOString().slice(0, 19) + 'Z',
+    is_active: faker.datatype.boolean(),
+    created_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
+    updated_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
+  },
+  meta: { timestamp: faker.string.alpha({ length: { min: 10, max: 20 } }) },
   ...overrideResponse,
 });
-
-export const getDeleteOwnerResponseMock = (): string => faker.word.sample();
-
-export const getGetMeOwnerMockHandler = (
-  overrideResponse?:
-    | GetMeOwner200
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<GetMeOwner200> | GetMeOwner200),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    '*/api/v1/owners/me',
-    async (info) => {
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === 'function'
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getGetMeOwnerResponseMock(),
-        ),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
-    },
-    options,
-  );
-};
 
 export const getListOwnersMockHandler = (
   overrideResponse?:
@@ -913,37 +715,9 @@ export const getUpdateOwnerMockHandler = (
     options,
   );
 };
-
-export const getDeleteOwnerMockHandler = (
-  overrideResponse?:
-    | string
-    | ((
-        info: Parameters<Parameters<typeof http.delete>[1]>[0],
-      ) => Promise<string> | string),
-  options?: RequestHandlerOptions,
-) => {
-  return http.delete(
-    '*/api/v1/owners/:id',
-    async (info) => {
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === 'function'
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getDeleteOwnerResponseMock(),
-        ),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
-    },
-    options,
-  );
-};
 export const getOwnersMock = () => [
-  getGetMeOwnerMockHandler(),
   getListOwnersMockHandler(),
   getCreateOwnerMockHandler(),
   getGetOwnerMockHandler(),
   getUpdateOwnerMockHandler(),
-  getDeleteOwnerMockHandler(),
 ];

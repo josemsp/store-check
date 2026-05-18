@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { useAuth } from '@/app/providers/AuthProvider';
+import { useAuth } from '@/app/providers/auth-provider';
 import { notify } from '@/shared/notifications/toast';
 
 const Signup = () => {

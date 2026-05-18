@@ -17,12 +17,12 @@ export type ListOwnersParams = {
    * @minimum 1
    * @maximum 100
    */
-  pageSize?: number;
+  page_size?: number;
   search?: string;
   /**
    * @nullable
    */
-  isActive?: boolean | null;
-  sortBy?: ListOwnersSortBy;
-  sortDir?: ListOwnersSortDir;
+  is_active?: boolean | null;
+  sort_by?: ListOwnersSortBy;
+  sort_dir?: ListOwnersSortDir;
 };

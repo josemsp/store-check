@@ -1,27 +1,36 @@
 import { Suspense, lazy } from 'react';
 import { createBrowserRouter } from 'react-router';
 
-import AppLayout from '@/app/layouts/AppLayout';
-import ForgotPassword from '@/features/auth/pages/ForgotPassword';
-import Signin from '@/features/auth/pages/Signin';
+import AppLayout from '@/app/layouts/app-layout';
 import { FullPageLoader } from '@/shared/components/ui/loader';
-import DashboardRedirector from '@/shared/guards/DashboardRedirector';
-import NotFound from '@/shared/pages/NotFound';
+import DashboardRedirector from '@/shared/guards/dashboard-redirector';
 
-import ProtectedRoute from '../shared/guards/ProtectedRoute';
-import PublicRoute from '../shared/guards/PublicRoute';
-import RoleGuard from '../shared/guards/RoleGuard';
+import ProtectedRoute from '../shared/guards/protected-route';
+import PublicRoute from '../shared/guards/public-route';
+import RoleGuard from '../shared/guards/role-guard';
 
-const RootDashboardLazy = lazy(() => import('@/features/dashboards/admin/Dashboard'));
-const InvitationsLazy = lazy(() => import('@/features/dashboards/admin/Invitations'));
-const OnboardingLazy = lazy(() => import('@/features/onboarding/pages/Onboarding'));
-const UserProfileLazy = lazy(() => import('@/features/users/pages/UserProfile'));
+const SigninLazy = lazy(() => import('@/features/auth/pages/signin'));
+const ForgotPasswordLazy = lazy(() => import('@/features/auth/pages/forgot-password'));
+const NotFoundLazy = lazy(() => import('@/shared/pages/not-found'));
+const RootDashboardLazy = lazy(() => import('@/features/dashboards/admin/dashboard'));
+const InvitationsLazy = lazy(() => import('@/features/dashboards/admin/invitations'));
+const OwnerInvitationsLazy = lazy(
+  () => import('@/features/invitations/pages/owner-invitations-page'),
+);
+const OnboardingLazy = lazy(() => import('@/features/onboarding/pages/onboarding'));
+const UserProfileLazy = lazy(() => import('@/features/users/pages/user-profile'));
 
 // Preload functions for lazy components - can be called on hover to prefetch
-export const preloadRootDashboard = () => import('@/features/dashboards/admin/Dashboard');
-export const preloadInvitations = () => import('@/features/dashboards/admin/Invitations');
-export const preloadOnboarding = () => import('@/features/onboarding/pages/Onboarding');
-export const preloadUserProfile = () => import('@/features/users/pages/UserProfile');
+export const preloadSignin = () => import('@/features/auth/pages/signin');
+export const preloadForgotPassword = () =>
+  import('@/features/auth/pages/forgot-password');
+export const preloadNotFound = () => import('@/shared/pages/not-found');
+export const preloadRootDashboard = () => import('@/features/dashboards/admin/dashboard');
+export const preloadInvitations = () => import('@/features/dashboards/admin/invitations');
+export const preloadOwnerInvitations = () =>
+  import('@/features/invitations/pages/owner-invitations-page');
+export const preloadOnboarding = () => import('@/features/onboarding/pages/onboarding');
+export const preloadUserProfile = () => import('@/features/users/pages/user-profile');
 
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<FullPageLoader />}>{children}</Suspense>
@@ -35,7 +44,7 @@ export const router = createBrowserRouter([
         path: '/login',
         element: (
           <SuspenseWrapper>
-            <Signin />
+            <SigninLazy />
           </SuspenseWrapper>
         ),
       },
@@ -43,7 +52,7 @@ export const router = createBrowserRouter([
         path: '/forgot-password',
         element: (
           <SuspenseWrapper>
-            <ForgotPassword />
+            <ForgotPasswordLazy />
           </SuspenseWrapper>
         ),
       },
@@ -51,7 +60,6 @@ export const router = createBrowserRouter([
   },
   {
     path: '/onboarding',
-    element: <ProtectedRoute />,
     children: [
       {
         index: true,
@@ -127,6 +135,14 @@ export const router = createBrowserRouter([
                 element: <h1>Branches</h1>,
               },
               {
+                path: 'invitations',
+                element: (
+                  <SuspenseWrapper>
+                    <OwnerInvitationsLazy />
+                  </SuspenseWrapper>
+                ),
+              },
+              {
                 path: 'profile',
                 element: (
                   <SuspenseWrapper>
@@ -156,6 +172,10 @@ export const router = createBrowserRouter([
   },
   {
     path: '*',
-    element: <NotFound />,
+    element: (
+      <SuspenseWrapper>
+        <NotFoundLazy />
+      </SuspenseWrapper>
+    ),
   },
 ]);

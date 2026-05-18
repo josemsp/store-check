@@ -1,14 +1,14 @@
 import { Outlet } from 'react-router-dom';
 
-import { NavUser } from '@/features/users/components/NavUser';
+import { NavUser } from '@/features/users/components/nav-user';
 import { Separator } from '@/shared/components/ui/separator';
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from '@/shared/components/ui/sidebar';
-import { ModeThemeToggle } from '@/shared/layout/ModeThemeToggle';
-import { AppSidebar } from '@/shared/layout/app-sidebar/AppSidebar';
+import { AppSidebar } from '@/shared/layout/app-sidebar/app-sidebar';
+import { ModeThemeToggle } from '@/shared/layout/mode-theme-toggle';
 
 const RootDashboard = () => {
   return (

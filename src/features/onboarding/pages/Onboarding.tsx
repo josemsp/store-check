@@ -3,7 +3,7 @@ import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
-import { useAuth } from '@/app/providers/AuthProvider';
+import { useAuth } from '@/app/providers/auth-provider';
 import {
   useAcceptInvitation,
   useValidateInvitation,
@@ -18,11 +18,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/card';
-import { useUploadAvatar } from '@/shared/hooks/useUploadAvatar';
+import { useUploadAvatar } from '@/shared/hooks/use-upload-avatar';
 
-import { OnboardingCompanyForm } from '../components/OnboardingCompanyForm';
-import { OnboardingProfileForm } from '../components/OnboardingProfileForm';
-import { type ProfileData, useOnboardingStore } from '../stores/useOnboardingStore';
+import { OnboardingCompanyForm } from '../components/onboarding-company-form';
+import { OnboardingProfileForm } from '../components/onboarding-profile-form';
+import { type ProfileData, useOnboardingStore } from '../stores/use-onboarding-store';
 
 const PageWrapper = ({ children }: React.PropsWithChildren) => (
   <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">

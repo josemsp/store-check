@@ -5,17 +5,12 @@
  * API for storage and management of products and users
  * OpenAPI spec version: 1.0.0
  */
+import type { ListOwners200DataItem } from './listOwners200DataItem';
+import type { ListOwners200Meta } from './listOwners200Meta';
 
 export type ListOwners200 = {
-  id: string;
-  name: string;
-  email: string;
-  /** @nullable */
-  phone: string | null;
-  businessName: string;
-  /** @nullable */
-  logoUrl: string | null;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  success: boolean;
+  message?: string;
+  data: ListOwners200DataItem[];
+  meta: ListOwners200Meta;
 };

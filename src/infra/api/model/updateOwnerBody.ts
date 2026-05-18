@@ -9,10 +9,8 @@
 export type UpdateOwnerBody = {
   name?: string;
   email?: string;
-  /** @nullable */
-  phone?: string | null;
-  businessName?: string;
-  /** @nullable */
-  logoUrl?: string | null;
-  isActive?: boolean;
+  phone?: string;
+  business_name?: string;
+  logo_url?: string;
+  is_active?: boolean;
 };
