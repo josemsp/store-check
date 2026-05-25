@@ -52,7 +52,7 @@ export default function UserProfile() {
       email: profile.email ?? '',
     });
     setAvatarUrl(profile.avatar_url ?? null);
-  }, [profile, reset]);
+  }, [profile]);
 
   // Detect if avatar has changed
   const avatarChanged = useMemo(

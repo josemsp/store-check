@@ -6,10 +6,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type ValidateInvitation200Role =
-  (typeof ValidateInvitation200Role)[keyof typeof ValidateInvitation200Role];
+export type UpdateProfileBodyRole =
+  (typeof UpdateProfileBodyRole)[keyof typeof UpdateProfileBodyRole];
 
-export const ValidateInvitation200Role = {
+export const UpdateProfileBodyRole = {
   owner: 'owner',
   manager: 'manager',
   warehouse: 'warehouse',

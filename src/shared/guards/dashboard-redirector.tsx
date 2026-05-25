@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
 
 import { useProfileContext } from '@/app/providers/profile-provider';
-import { FullPageLoader } from '@/shared/components/ui/loader';
+import { FullPageLoader } from '@/shared/components/feedback/loader';
 
 import { useOnboardingStore } from '../../features/onboarding/stores/use-onboarding-store';
 

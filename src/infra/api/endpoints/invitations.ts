@@ -315,13 +315,21 @@ export const useInviteUser = <
 export const getValidateInvitationResponseMock = (
   overrideResponse: Partial<ValidateInvitation200> = {},
 ): ValidateInvitation200 => ({
-  email: faker.internet.email(),
-  role: faker.helpers.arrayElement([
-    'owner',
-    'manager',
-    'warehouse',
-    'branch_staff',
-  ] as const),
+  success: faker.datatype.boolean(),
+  message: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  data: {
+    email: faker.internet.email(),
+    role: faker.helpers.arrayElement([
+      'owner',
+      'manager',
+      'warehouse',
+      'branch_staff',
+    ] as const),
+  },
+  meta: { timestamp: faker.date.past().toISOString().slice(0, 19) + 'Z' },
   ...overrideResponse,
 });
 

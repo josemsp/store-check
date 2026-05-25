@@ -18,10 +18,8 @@ const AppLayout = () => {
   // useViewTransition();
 
   useEffect(() => {
-    if (location !== displayLocation) {
-      setTransitionStage('fadeOut');
-    }
-  }, [location, displayLocation]);
+    setTransitionStage('fadeOut');
+  }, [location.pathname]);
 
   return (
     <SidebarProvider

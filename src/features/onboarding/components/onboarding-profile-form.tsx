@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowRight, Camera } from 'lucide-react';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import InputField from '@/shared/components/form/input-field';
@@ -35,10 +35,13 @@ export function OnboardingProfileForm({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize preview if file exists
-  if (initialData?.avatarFile && !avatarPreview) {
-    const objectUrl = URL.createObjectURL(initialData.avatarFile);
-    setAvatarPreview(objectUrl);
-  }
+  useEffect(() => {
+    if (initialData?.avatarFile && !avatarPreview) {
+      const objectUrl = URL.createObjectURL(initialData.avatarFile);
+      setAvatarPreview(objectUrl);
+      return () => URL.revokeObjectURL(objectUrl);
+    }
+  }, [initialData?.avatarFile, avatarPreview]);
 
   const {
     register,

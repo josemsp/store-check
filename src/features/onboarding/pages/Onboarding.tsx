@@ -1,6 +1,6 @@
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import { useAuth } from '@/app/providers/auth-provider';
@@ -105,11 +105,14 @@ const Onboarding = () => {
 
   const { uploadAvatar } = useUploadAvatar();
 
+  const validateRef = useRef(validateInvitation);
+  validateRef.current = validateInvitation;
+
   useEffect(() => {
     if (!token) return;
 
     if (urlToken) {
-      validateInvitation(
+      validateRef.current(
         { data: { token } },
         {
           onSuccess: (res) => {
@@ -118,7 +121,8 @@ const Onboarding = () => {
         },
       );
     }
-  }, [urlToken, token, validateInvitation, setInvitation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlToken, token]);
 
   const submitInvitation = async (data: ProfileData) => {
     if (!token || !user) return;
@@ -243,6 +247,7 @@ const Onboarding = () => {
             </div>
           </CardContent>
         </Card>
+        {/* <OnboardingApp /> */}
       </PageWrapper>
     );
   }

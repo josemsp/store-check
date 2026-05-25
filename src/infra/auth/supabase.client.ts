@@ -1,5 +1,7 @@
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
 
+import { env } from '../env';
+
 let supabase: SupabaseClient | null = null;
 
 const STORAGE_KEY = 'supabase-storage-type';
@@ -17,34 +19,26 @@ export function initSupabase(rememberDevice: boolean) {
   const storageType: StorageType = rememberDevice ? 'local' : 'session';
   localStorage.setItem(STORAGE_KEY, storageType);
 
-  supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL!,
-    import.meta.env.VITE_SUPABASE_ANON_KEY!,
-    {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        storage: rememberDevice ? localStorage : sessionStorage,
-      },
+  supabase = createClient(env.SUPABASE_URL!, env.SUPABASE_ANON_KEY!, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      storage: rememberDevice ? localStorage : sessionStorage,
     },
-  );
+  });
 
   return supabase;
 }
 
 export function getSupabaseClient() {
   if (!supabase) {
-    supabase = createClient(
-      import.meta.env.VITE_SUPABASE_URL!,
-      import.meta.env.VITE_SUPABASE_ANON_KEY!,
-      {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          storage: getAuthStorage(),
-        },
+    supabase = createClient(env.SUPABASE_URL!, env.SUPABASE_ANON_KEY!, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        storage: getAuthStorage(),
       },
-    );
+    });
   }
 
   return supabase;

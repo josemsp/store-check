@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
 
 import { useAuth } from '@/app/providers/auth-provider';
-import { FullPageLoader } from '@/shared/components/ui/loader';
+import { FullPageLoader } from '@/shared/components/feedback/loader';
 
 export default function PublicRoute() {
   const { isAuthenticated, isInitialized } = useAuth();

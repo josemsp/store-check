@@ -1,8 +1,8 @@
 import type { Session, User } from '@supabase/supabase-js';
 
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
-import { tokenStore } from '@/infra/api/token-store';
+import { ejectInterceptors, setupInterceptors } from '@/infra/api/interceptors';
 import { getSupabaseClient } from '@/infra/auth/supabase.client';
 
 type AuthContextValue = {
@@ -52,16 +52,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   /* ------------------------------------------------------------------
    * Bootstrap + auth listener
    * ------------------------------------------------------------------ */
+  const tokenRef = useRef<string | null>(null);
+
   useEffect(() => {
     let mounted = true;
+
+    setupInterceptors(() => tokenRef.current);
 
     async function bootstrap() {
       const { data } = await supabase.auth.getSession();
 
       if (!mounted) return;
 
+      tokenRef.current = data.session?.access_token ?? null;
       setSession(data.session);
-      tokenStore.token = data.session?.access_token ?? null;
       const currentUser = data.session?.user ?? null;
       setUser(currentUser);
       setIsInitialized(true);
@@ -72,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      tokenStore.token = newSession?.access_token ?? null;
+      tokenRef.current = newSession?.access_token ?? null;
       setSession((prev) => {
         if (prev?.access_token === newSession?.access_token) return prev;
         return newSession;
@@ -88,6 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       mounted = false;
       subscription.unsubscribe();
+      ejectInterceptors();
     };
   }, [supabase]);
 

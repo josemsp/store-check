@@ -1,5 +1,5 @@
 import { useInitializer } from '@/app/providers/initializer-provider';
-import { FullPageLoader } from '@/shared/components/ui/loader';
+import { FullPageLoader } from '@/shared/components/feedback/loader';
 
 export function AppSplash({ children }: { children: React.ReactNode }) {
   const { isAppReady } = useInitializer();

@@ -5,9 +5,12 @@
  * API for storage and management of products and users
  * OpenAPI spec version: 1.0.0
  */
-import type { ValidateInvitation200Role } from './validateInvitation200Role';
+import type { ValidateInvitation200Data } from './validateInvitation200Data';
+import type { ValidateInvitation200Meta } from './validateInvitation200Meta';
 
 export type ValidateInvitation200 = {
-  email: string;
-  role: ValidateInvitation200Role;
+  success: boolean;
+  message?: string;
+  data: ValidateInvitation200Data;
+  meta: ValidateInvitation200Meta;
 };

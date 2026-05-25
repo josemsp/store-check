@@ -1,63 +1,58 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 
-type Step = 'validating' | 'welcome' | 'profile' | 'company';
+import { ONBOARDING_STEPS } from '../config/onboarding-steps';
 
-export type ProfileData = {
-  firstName: string;
-  lastName: string;
-  password: string;
-  avatarFile?: File;
+type InvitationData = {
+  token: string;
+  email: string;
+  role: string;
 };
 
-interface OnboardingState {
-  step: Step;
-  token: string | null;
-  email: string | null;
-  role: string | null;
-  profileData: ProfileData | null;
-  companyName: string;
-  setStep: (step: Step) => void;
-  setInvitation: (data: { token: string; email: string; role: string }) => void;
-  setProfileData: (data: ProfileData) => void;
-  setCompanyName: (data: string) => void;
-  clearData: () => void;
-}
+type OnboardingStore = {
+  currentStepIndex: number;
 
-export const useOnboardingStore = create<OnboardingState>()(
-  persist(
-    (set) => ({
-      step: 'validating',
-      token: null,
-      email: null,
-      role: null,
-      profileData: null,
-      companyName: '',
+  invitation: InvitationData | null;
 
-      setStep: (step) => set({ step }),
-      setInvitation: (data) =>
-        set({ token: data.token, email: data.email, role: data.role, step: 'welcome' }),
-      setProfileData: (data) => set({ profileData: data }),
-      setCompanyName: (data) => set({ companyName: data }),
-      clearData: () =>
-        set({
-          step: 'validating',
-          token: null,
-          email: null,
-          role: null,
-          profileData: null,
-          companyName: '',
-        }),
-    }),
-    {
-      name: 'onboarding-storage',
-      partialize: (state) => ({
-        token: state.token,
-        email: state.email,
-        role: state.role,
-        step: state.step,
-        companyName: state.companyName,
-      }),
-    },
-  ),
-);
+  setInvitation: (invitation: InvitationData | null) => void;
+
+  nextStep: () => void;
+  previousStep: () => void;
+  goToStep: (index: number) => void;
+
+  reset: () => void;
+};
+
+export const useOnboardingStore = create<OnboardingStore>((set) => ({
+  currentStepIndex: 0,
+
+  invitation: null,
+
+  setInvitation: (invitation) => {
+    set({ invitation });
+  },
+
+  nextStep: () => {
+    set((state) => ({
+      currentStepIndex: Math.min(state.currentStepIndex + 1, ONBOARDING_STEPS.length - 1),
+    }));
+  },
+
+  previousStep: () => {
+    set((state) => ({
+      currentStepIndex: Math.max(state.currentStepIndex - 1, 0),
+    }));
+  },
+
+  goToStep: (index) => {
+    set({
+      currentStepIndex: Math.max(0, Math.min(index, ONBOARDING_STEPS.length - 1)),
+    });
+  },
+
+  reset: () => {
+    set({
+      currentStepIndex: 0,
+      invitation: null,
+    });
+  },
+}));

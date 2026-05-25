@@ -1,13 +1,13 @@
-import { Suspense, lazy } from 'react';
+import { lazy } from 'react';
 import { createBrowserRouter } from 'react-router';
 
 import AppLayout from '@/app/layouts/app-layout';
-import { FullPageLoader } from '@/shared/components/ui/loader';
 import DashboardRedirector from '@/shared/guards/dashboard-redirector';
 
 import ProtectedRoute from '../shared/guards/protected-route';
 import PublicRoute from '../shared/guards/public-route';
 import RoleGuard from '../shared/guards/role-guard';
+import { SuspenseWrapper } from './suspense-wrapper';
 
 const SigninLazy = lazy(() => import('@/features/auth/pages/signin'));
 const ForgotPasswordLazy = lazy(() => import('@/features/auth/pages/forgot-password'));
@@ -17,7 +17,8 @@ const InvitationsLazy = lazy(() => import('@/features/dashboards/admin/invitatio
 const OwnerInvitationsLazy = lazy(
   () => import('@/features/invitations/pages/owner-invitations-page'),
 );
-const OnboardingLazy = lazy(() => import('@/features/onboarding/pages/onboarding'));
+// const OnboardingLazy = lazy(() => import('@/features/onboarding/pages/onboarding'));
+const OnboardingLazy = lazy(() => import('@/features/onboarding/pages/onboarding-page'));
 const UserProfileLazy = lazy(() => import('@/features/users/pages/user-profile'));
 
 // Preload functions for lazy components - can be called on hover to prefetch
@@ -31,10 +32,6 @@ export const preloadOwnerInvitations = () =>
   import('@/features/invitations/pages/owner-invitations-page');
 export const preloadOnboarding = () => import('@/features/onboarding/pages/onboarding');
 export const preloadUserProfile = () => import('@/features/users/pages/user-profile');
-
-const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
-  <Suspense fallback={<FullPageLoader />}>{children}</Suspense>
-);
 
 export const router = createBrowserRouter([
   {
@@ -56,6 +53,14 @@ export const router = createBrowserRouter([
           </SuspenseWrapper>
         ),
       },
+      // {
+      //   path: "/onboarding",
+      //   element: (
+      //     <SuspenseWrapper>
+      //       <OnboardingLazy />
+      //     </SuspenseWrapper>
+      //   ),
+      // }
     ],
   },
   {

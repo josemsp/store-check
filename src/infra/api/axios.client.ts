@@ -1,9 +1,9 @@
 import axios, { type AxiosRequestConfig } from 'axios';
 
+import { env } from '../env';
+
 export const axiosInstance = axios.create({
-  baseURL: import.meta.env.DEV
-    ? import.meta.env.VITE_API_URL_DEV
-    : import.meta.env.VITE_API_URL,
+  baseURL: env.DEV ? env.API_URL_DEV : env.API_URL,
   // withCredentials: true,
 });
 

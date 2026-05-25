@@ -18,3 +18,10 @@ export const setupInterceptors = (getToken: () => string | null) => {
     (error) => Promise.reject(error),
   );
 };
+
+export const ejectInterceptors = () => {
+  if (requestInterceptorId !== null) {
+    axiosInstance.interceptors.request.eject(requestInterceptorId);
+    requestInterceptorId = null;
+  }
+};

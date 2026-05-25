@@ -1,13 +1,13 @@
 import { type LucideIcon } from 'lucide-react';
+
+import { NavLink } from '@/shared/components/navegation/nav-main';
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from 'src/shared/components/ui/sidebar';
-
-import { NavLink } from '@/shared/components/navegation/nav-main';
+} from '@/shared/components/ui/sidebar';
 
 export function NavSecondary({
   items,
